@@ -1,6 +1,5 @@
 import FFT from 'fft.js'
 
-
 /**
  * Voice Activity Detection (VAD) algorithm.
  *

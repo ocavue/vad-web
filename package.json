@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "fix": "eslint --fix . && prettier --write .",
     "test": "echo 'No tests yet'",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "change": "changeset",
+    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
+    "ci:publish": "pnpm run build:package && pnpm publish --access public -r --no-git-checks --tag latest"
   },
   "devDependencies": {
     "@ocavue/eslint-config": "^2.11.1",
