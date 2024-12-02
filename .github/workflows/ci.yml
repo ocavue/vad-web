@@ -27,6 +27,9 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Build
+        run: pnpm run build
+
       - name: Typecheck
         run: pnpm run typecheck
 
