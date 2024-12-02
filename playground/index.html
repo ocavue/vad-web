@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VAD Playground</title>
+  </head>
+
+  <body data-recording="false" data-speaking="false">
+    <h1>VAD Recording Demo</h1>
+    <button id="startButton">Start Recording</button>
+    <button id="stopButton">Stop Recording</button>
+    <div id="speaking">Speaking</div>
+    <div id="silence">Silence</div>
+    <div id="audioContainer"></div>
+    <script type="module" src="main.ts"></script>
+  </body>
+
+  <style>
+    body[data-recording='true'] #startButton {
+      display: none;
+    }
+
+    body[data-recording='false'] #stopButton {
+      display: none;
+    }
+
+    body[data-recording='false'] #speaking,
+    body[data-recording='false'] #silence {
+      display: none;
+    }
+
+    body[data-speaking='false'] #speaking {
+      display: none;
+    }
+
+    body[data-speaking='true'] #silence {
+      display: none;
+    }
+  </style>
+</html>

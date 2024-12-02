@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "lib": ["esnext", "dom"],
+    "outDir": "node_modules/.cache/ts-out",
+    "allowJs": true,
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "composite": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "verbatimModuleSyntax": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
+  },
+  "include": ["src", "test", "./*.ts", "./*.js", "playground"]
+}
