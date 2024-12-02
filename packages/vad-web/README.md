@@ -55,10 +55,19 @@ If you are using Vite, you can use the following import:
 import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
 ```
 
-If you are using WebPack, you need copy the `vad-audio-worklet.js` file to your public directory, then you can use the following import:
+If you are using Webpack, you need to add the following configuration to your `webpack.config.js`:
 
-```ts
-const audioWorkletURL = '/vad-audio-worklet.js'
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /vad-audio-worklet/,
+        type: 'asset/resource',
+      },
+    ],
+  },
+}
 ```
 
 ## License

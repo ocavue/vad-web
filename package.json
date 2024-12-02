@@ -1,64 +1,22 @@
 {
-  "name": "vad-web",
+  "name": "vad-web-monorepo",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@9.14.4",
-  "description": "Voice activity detector (VAD) for the browser",
-  "author": "ocavue <ocavue@gmail.com>",
-  "license": "MIT",
-  "funding": "https://github.com/sponsors/ocavue",
-  "homepage": "https://github.com/ocavue/vad-web#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ocavue/vad-web.git"
-  },
-  "bugs": "https://github.com/ocavue/vad-web/issues",
-  "keywords": [],
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./vad-audio-worklet": {
-      "types": "./dist/vad-audio-worklet.d.ts",
-      "import": "./dist/vad-audio-worklet.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./dist/index.d.ts"
-      ]
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "build": "tsup",
-    "dev": "pnpm run build && pnpm --filter ./playground build && pnpm --filter ./playground preview",
+    "build": "pnpm -r run build",
+    "dev": "pnpm run build && pnpm -r run dev",
     "lint": "eslint .",
     "fix": "eslint --fix . && prettier --write .",
-    "prepublishOnly": "pnpm run build",
-    "start": "esno src/index.ts",
     "test": "echo 'No tests yet'",
     "typecheck": "tsc -b"
   },
   "devDependencies": {
-    "@ocavue/eslint-config": "^2.11.0",
+    "@ocavue/eslint-config": "^2.11.1",
     "eslint": "^9.14.0",
-    "esno": "^4.8.0",
-    "fft.js": "^4.0.4",
     "prettier": "^3.4.1",
     "tsup": "^8.3.5",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.11",
-    "vitest": "^2.1.7"
+    "typescript": "^5.6.3"
   },
   "renovate": {
     "extends": [

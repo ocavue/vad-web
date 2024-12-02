@@ -3,11 +3,11 @@
     "target": "es2020",
     "module": "esnext",
     "lib": ["esnext", "dom"],
-    "outDir": "node_modules/.cache/ts-out",
+    "outDir": "node_modules/.cache/ts-out-build",
     "allowJs": true,
     "moduleResolution": "Bundler",
     "esModuleInterop": true,
-    "composite": false,
+    "composite": true,
     "strict": true,
     "strictNullChecks": true,
     "verbatimModuleSyntax": true,
@@ -16,16 +16,5 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true
   },
-  "include": ["./*.ts", "./*.js"],
-  "references": [
-    {
-      "path": "./examples/with-next/tsconfig.json"
-    },
-    {
-      "path": "./examples/with-vite/tsconfig.json"
-    },
-    {
-      "path": "./packages/vad-web/tsconfig.json"
-    }
-  ]
+  "include": ["src"]
 }

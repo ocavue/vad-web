@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "outDir": "./node_modules/.cache/ts-out",
+    "composite": true
+  },
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}

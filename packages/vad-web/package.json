@@ -1,0 +1,50 @@
+{
+  "name": "vad-web",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Voice activity detector (VAD) for the browser",
+  "author": "ocavue <ocavue@gmail.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/ocavue",
+  "homepage": "https://github.com/ocavue/vad-web#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ocavue/vad-web.git"
+  },
+  "bugs": "https://github.com/ocavue/vad-web/issues",
+  "keywords": [],
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./vad-audio-worklet": {
+      "types": "./dist/vad-audio-worklet.d.ts",
+      "import": "./dist/vad-audio-worklet.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.48.0",
+    "fft.js": "^4.0.4",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3"
+  }
+}

@@ -7,7 +7,7 @@
     "allowJs": true,
     "moduleResolution": "Bundler",
     "esModuleInterop": true,
-    "composite": false,
+    "composite": true,
     "strict": true,
     "strictNullChecks": true,
     "verbatimModuleSyntax": true,
@@ -19,13 +19,7 @@
   "include": ["./*.ts", "./*.js"],
   "references": [
     {
-      "path": "./examples/with-next/tsconfig.json"
-    },
-    {
-      "path": "./examples/with-vite/tsconfig.json"
-    },
-    {
-      "path": "./packages/vad-web/tsconfig.json"
+      "path": "./tsconfig.build.json"
     }
   ]
 }
