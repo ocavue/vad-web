@@ -33,15 +33,6 @@ export type AudioVADGetMessage = {
   type: 'flush'
 }
 
-/**
- * AudioWorkletProcessor for Voice Activity Detection (VAD).
- *
- * Based on:
- * Moattar, Mohammad & Homayoonpoor, Mahdi. (2010).
- * A simple but efficient real-time voice activity detection algorithm.
- * European Signal Processing Conference.
- * @see https://www.researchgate.net/publication/255667085_A_simple_but_efficient_real-time_voice_activity_detection_algorithm
- */
 class AudioVADProcessor extends AudioWorkletProcessor {
   private vad: VADAlgorithm
   private buffer: number[] = []

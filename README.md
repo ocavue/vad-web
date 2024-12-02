@@ -61,6 +61,18 @@ If you are using WebPack, you need copy the `vad-audio-worklet.js` file to your 
 const audioWorkletURL = '/vad-audio-worklet.js'
 ```
 
+## Credits
+
+- This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library, which is licensed under the [MIT License](https://github.com/indutny/fft.js?tab=readme-ov-file#license).
+
+- The VAD algorithm is based on the paper:
+
+  Moattar, Mohammad & Homayoonpoor, Mahdi. (2010). A simple but efficient real-time voice activity detection algorithm. European Signal Processing Conference.
+
+  https://www.researchgate.net/publication/255667085_A_simple_but_efficient_real-time_voice_activity_detection_algorithm
+
+- The VAD algorithm implementation is based on the [`vad-audio-worklet`](https://github.com/thurti/vad-audio-worklet) library, which is licensed under the [MIT License](https://github.com/thurti/vad-audio-worklet/blob/main/LICENSE).
+
 ## License
 
 MIT
