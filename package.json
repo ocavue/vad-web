@@ -46,7 +46,7 @@
     "fix": "eslint --fix . && prettier --write .",
     "prepublishOnly": "pnpm run build",
     "start": "esno src/index.ts",
-    "test": "vitest",
+    "test": "echo 'No tests yet'",
     "typecheck": "tsc -b"
   },
   "devDependencies": {

@@ -67,7 +67,7 @@ export class VADAlgorithm {
       -10 *
       Math.log10(
         Math.exp(sfm_sum_geo / frequency_data.length) /
-        (sfm_sum_ari / frequency_data.length),
+          (sfm_sum_ari / frequency_data.length),
       )
     const sfm_safe = Number.isFinite(sfm) ? sfm : 0
 
