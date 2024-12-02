@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      fft.js:
-        specifier: ^4.0.4
-        version: 4.0.4
     devDependencies:
       '@ocavue/eslint-config':
         specifier: ^2.11.0
@@ -21,6 +17,9 @@ importers:
       esno:
         specifier: ^4.8.0
         version: 4.8.0
+      fft.js:
+        specifier: ^4.0.4
+        version: 4.0.4
       prettier:
         specifier: ^3.4.1
         version: 3.4.1

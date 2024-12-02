@@ -1,6 +1,5 @@
 import { startRecording } from 'vad-web'
-
-const audioWorkletURL = new URL('./worklet.ts', import.meta.url)
+import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
 
 let disposeRecording: (() => void) | null = null
 
@@ -40,7 +39,7 @@ function onAudioData(audioData: Float32Array, sampleRate: number) {
   const duration = audioData.length / sampleRate
   console.log(`Audio data length: ${audioData.length}, Duration: ${duration}s`)
 
-  // 将 Float32Array 转换为 Blob，并创建音频元素
+  // Convert Float32Array to Blob and create audio element
   const audioBlob = encodeWAV(audioData, sampleRate)
   const audioURL = URL.createObjectURL(audioBlob)
 
@@ -62,12 +61,6 @@ function onSpeech() {
 }
 
 function encodeWAV(samples: Float32Array, sampleRate: number): Blob {
-  console.log(
-    'Encoding WAV with samples length:',
-    samples.length,
-    'and sampleRate:',
-    sampleRate,
-  )
   const buffer = new ArrayBuffer(44 + samples.length * 2)
   const view = new DataView(buffer)
 
@@ -101,7 +94,6 @@ function encodeWAV(samples: Float32Array, sampleRate: number): Blob {
   // Write the PCM samples
   floatTo16BitPCM(view, 44, samples)
 
-  console.log('WAV encoding completed')
   return new Blob([view], { type: 'audio/wav' })
 }
 
@@ -110,13 +102,11 @@ function floatTo16BitPCM(
   offset: number,
   input: Float32Array,
 ): void {
-  console.log('Converting Float32Array to 16-bit PCM')
   for (let i = 0; i < input.length; i++, offset += 2) {
     let s = Math.max(-1, Math.min(1, input[i]))
     s = s < 0 ? s * 0x8000 : s * 0x7fff
     output.setInt16(offset, s, true)
   }
-  console.log('Conversion to 16-bit PCM completed')
 }
 
 function writeString(view: DataView, offset: number, string: string): void {

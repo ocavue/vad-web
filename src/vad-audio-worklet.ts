@@ -86,9 +86,10 @@ class AudioVADProcessor extends AudioWorkletProcessor {
    * Add a message listener.
    */
   on(callback: (message: AudioVADGetMessage) => void) {
-    this.port.addEventListener('message', (event) => {
+    // eslint-disable-next-line unicorn/prefer-add-event-listener
+    this.port.onmessage = (event) => {
       callback(event.data as AudioVADGetMessage)
-    })
+    }
   }
 
   /**
@@ -129,8 +130,9 @@ class AudioVADProcessor extends AudioWorkletProcessor {
       if (result.is_speech_frame_counter >= this.speech_frames_threshold) {
         this.post({ type: 'speech' })
         this.is_recording = true
+        // Keep some buffer to avoid cutting off the speech at the beginning
         this.recording_buffer = this.recording_buffer.slice(
-          -result.is_speech_frame_counter,
+          -this.speech_frames_threshold * 2,
         )
         this.recording_buffer.push(frame)
       } else {
@@ -142,4 +144,4 @@ class AudioVADProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor('vad', AudioVADProcessor)
+registerProcessor('AudioVADProcessor', AudioVADProcessor)
