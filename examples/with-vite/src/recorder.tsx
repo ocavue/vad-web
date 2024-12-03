@@ -40,18 +40,21 @@ export default function Recorder({
 
   return (
     <div>
-      {isRecording ? (
-        <button onClick={stop}>Stop Recording</button>
-      ) : (
-        <button onClick={start}>Start Recording</button>
-      )}
-      {isRecording ? (
-        isSpeaking ? (
-          <div>Speaking</div>
+      <div>
+        {isRecording ? (
+          <button onClick={stop}>Stop Recording</button>
         ) : (
-          <div>Silence</div>
-        )
-      ) : null}
+          <button onClick={start}>Start Recording</button>
+        )}{' '}
+        {isRecording ? (
+          <>
+            <span>Current state: </span>
+            <span>
+              {isSpeaking ? <span>Speaking</span> : <span>Silence</span>}
+            </span>
+          </>
+        ) : null}
+      </div>
       <div>
         {audioURLs.map((url) => (
           <audio key={url} src={url} controls />
