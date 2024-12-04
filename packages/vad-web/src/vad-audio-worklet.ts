@@ -16,7 +16,6 @@ export type AudioVADGetMessage = {
 
 class AudioVADProcessor extends AudioWorkletProcessor {
   private pipeline: VADPipeline
-  private buffer: number[] = []
 
   constructor(options?: AudioWorkletNodeOptions) {
     super(options)
