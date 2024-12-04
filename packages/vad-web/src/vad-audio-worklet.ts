@@ -1,62 +1,41 @@
 /// <reference types="./audio-worklet.d.ts" />
 
-import { concatFloat32Array } from './concat-float32-array'
-import { VADAlgorithm } from './vad-algorithm'
+import {
+  VADPipeline,
+  type PipelineProcessResult,
+  type VADPipelineOptions,
+} from './vad-pipeline'
 
-export interface AudioVADProcessorOptions {
-  sampleRate: number
+export type AudioVADProcessorOptions = VADPipelineOptions
 
-  /**
-   * The minimum number of silent frames before a speech is considered to be over.
-   */
-  silentFramesThreshold?: number
-
-  /**
-   * The minimum number of speech frames before a speech is considered to be started.
-   */
-  speechFramesThreshold?: number
-}
-
-export type AudioVADPostMessage =
-  | {
-      type: 'speech'
-    }
-  | {
-      type: 'silence'
-    }
-  | {
-      type: 'audioData'
-      audioBuffer: Float32Array
-    }
+export type AudioVADPostMessage = PipelineProcessResult
 
 export type AudioVADGetMessage = {
   type: 'flush'
 }
 
 class AudioVADProcessor extends AudioWorkletProcessor {
-  private vad: VADAlgorithm
+  private pipeline: VADPipeline
   private buffer: number[] = []
-  private is_recording = false
-  private recording_buffer: Float32Array[] = []
-  private silent_frames_threshold: number
-  private speech_frames_threshold: number
 
   constructor(options?: AudioWorkletNodeOptions) {
     super(options)
 
-    const processor_options =
+    const processorOptions =
       options?.processorOptions as AudioVADProcessorOptions
-    const sample_rate = processor_options.sampleRate
-    this.silent_frames_threshold = processor_options.silentFramesThreshold ?? 20
-    this.speech_frames_threshold = processor_options.speechFramesThreshold ?? 10
 
-    this.vad = new VADAlgorithm(sample_rate)
+    this.pipeline = new VADPipeline({
+      sampleRate: processorOptions.sampleRate,
+      silentFramesThreshold: processorOptions.silentFramesThreshold,
+      speechFramesThreshold: processorOptions.speechFramesThreshold,
+    })
 
     this.on((message) => {
-      if (message.type === 'flush' && this.is_recording) {
-        const audio_buffer = concatFloat32Array(this.recording_buffer)
-        this.recording_buffer = []
-        this.post({ type: 'audioData', audioBuffer: audio_buffer })
+      if (message.type === 'flush') {
+        const result = this.pipeline.flush()
+        if (result) {
+          this.post(result)
+        }
       }
     })
   }
@@ -85,52 +64,18 @@ class AudioVADProcessor extends AudioWorkletProcessor {
 
   /**
    * Process audio data.
-   * @param inputs - Audio input data
-   * @param outputs - Audio output data
-   * @param parameters - Audio parameters
-   * @returns - Whether to keep the processor alive
    */
   process(inputs: Float32Array[][]): boolean {
     if (!inputs || !inputs[0] || !inputs[0][0]) {
       return true
     }
 
-    this.buffer.push(...inputs[0][0])
-
-    if (this.buffer.length < this.vad.frame_size) {
-      return true
+    const audioData: Float32Array = inputs[0][0]
+    const results = this.pipeline.process(audioData)
+    for (const result of results) {
+      this.post(result)
     }
 
-    const frame = new Float32Array(this.buffer.slice(0, this.vad.frame_size))
-    this.buffer = this.buffer.slice(this.vad.frame_size)
-
-    const result = this.vad.process(frame)
-
-    // Handle speech and silence detection
-    if (this.is_recording) {
-      if (result.is_silent_frame_counter >= this.silent_frames_threshold) {
-        this.post({ type: 'silence' })
-        this.is_recording = false
-        const audio_buffer = concatFloat32Array(this.recording_buffer)
-        this.post({ type: 'audioData', audioBuffer: audio_buffer })
-        this.recording_buffer = []
-      } else {
-        this.recording_buffer.push(frame)
-      }
-    } else {
-      if (result.is_speech_frame_counter >= this.speech_frames_threshold) {
-        this.post({ type: 'speech' })
-        this.is_recording = true
-        // Keep some buffer to avoid cutting off the speech at the beginning
-        this.recording_buffer = this.recording_buffer.slice(
-          -this.speech_frames_threshold * 2,
-        )
-        this.recording_buffer.push(frame)
-      } else {
-        this.recording_buffer.push(frame)
-      }
-    }
-    // Return true to keep processor alive
     return true
   }
 }

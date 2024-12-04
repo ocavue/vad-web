@@ -6,7 +6,7 @@
   "packageManager": "pnpm@9.14.4",
   "scripts": {
     "build": "pnpm -r --sequential run build",
-    "build:package": "pnpm -r --sequential --filter='./packages/*' run build",    
+    "build:package": "pnpm -r --sequential --filter='./packages/*' run build",
     "dev": "pnpm run build && pnpm -r run dev",
     "lint": "eslint .",
     "fix": "eslint --fix . && prettier --write .",
