@@ -6,6 +6,7 @@
   "packageManager": "pnpm@9.14.4",
   "scripts": {
     "build": "pnpm -r --sequential run build",
+    "build:package": "turbo build --filter='./packages/*' --concurrency=1",    
     "dev": "pnpm run build && pnpm -r run dev",
     "lint": "eslint .",
     "fix": "eslint --fix . && prettier --write .",
@@ -13,7 +14,7 @@
     "typecheck": "tsc -b",
     "change": "changeset",
     "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
-    "ci:publish": "pnpm run build && pnpm publish --access public -r --no-git-checks --tag latest"
+    "ci:publish": "pnpm run build:package && pnpm publish --access public -r --no-git-checks --tag latest"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.10",
