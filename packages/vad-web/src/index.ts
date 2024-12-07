@@ -1,2 +1,2 @@
 export { type RecordingOptions, startRecording } from './recording'
-export { splitAudio, type SplittingOptions } from './splitting'
+export { startRecognition, type RecognitionOptions } from './recognition'
