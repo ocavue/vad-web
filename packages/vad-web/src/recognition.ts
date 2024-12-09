@@ -1,3 +1,4 @@
+import type { DisposeFunction } from './types'
 import { VADPipeline } from './vad-pipeline'
 
 export interface RecognitionOptions {
@@ -32,7 +33,9 @@ export interface RecognitionOptions {
  *
  * @returns A function to stop the recognition session.
  */
-export function startRecognition(options: RecognitionOptions): () => void {
+export async function startRecognition(
+  options: RecognitionOptions,
+): Promise<DisposeFunction> {
   const {
     onAudioData,
     onSilence,
@@ -45,30 +48,32 @@ export function startRecognition(options: RecognitionOptions): () => void {
   const audioContext = new AudioContext()
 
   // Dispose function to stop recording
-  const dispose = () => {
+  const dispose = async () => {
     disposeFlag = true
-    void audioContext.close()
+    await audioContext.close()
   }
 
-  async function init() {
-    try {
-      const decoded: AudioBuffer =
-        await audioContext.decodeAudioData(audioDataBuffer)
-      const sampleRate = decoded.sampleRate
+  try {
+    const decoded: AudioBuffer =
+      await audioContext.decodeAudioData(audioDataBuffer)
+    const sampleRate = decoded.sampleRate
 
-      const audioData = decoded.getChannelData(0)
+    const audioData = decoded.getChannelData(0)
 
-      // Each chunk contains 128 samples, which is same as the `AudioWorkletProcessor.process` method.
-      const chunkSize = 128
+    // Each chunk contains 128 samples, which is same as the `AudioWorkletProcessor.process` method.
+    const chunkSize = 128
 
-      const pipeline = new VADPipeline({
-        sampleRate,
-        maxDurationSeconds,
-      })
+    const pipeline = new VADPipeline({
+      sampleRate,
+      maxDurationSeconds,
+    })
 
-      // TODO: handle maxDurationFrames
+    const handle = async () => {
       for (let i = 0; i < audioData.length; i += chunkSize) {
         if (disposeFlag) break
+
+        // Avoid blocking the main thread
+        await new Promise((resolve) => setTimeout(resolve, 0))
 
         const chunk = audioData.slice(i, i + chunkSize)
         const results = pipeline.process(new Float32Array(chunk))
@@ -82,13 +87,13 @@ export function startRecognition(options: RecognitionOptions): () => void {
           }
         }
       }
-    } catch (err) {
-      dispose()
-      throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
     }
-  }
 
-  void init()
+    void handle()
+  } catch (err) {
+    void dispose()
+    throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
+  }
 
   return dispose
 }
