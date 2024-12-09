@@ -1,5 +1,6 @@
 import type { DisposeFunction } from './types'
 import { sleep } from './utils/sleep'
+import { waitForIdle } from './utils/wait-for-idle'
 import { VADPipeline } from './vad-pipeline'
 
 export interface RecognitionOptions {
@@ -68,10 +69,9 @@ export async function startRecognition(
     })
 
     const handle = async () => {
-      // Avoid blocking the main thread
-      await sleep(0)
+      await waitForIdle()
       const audioData = decoded.getChannelData(0)
-      await sleep(0)
+      await waitForIdle()
 
       for (let i = 0; i < audioData.length; i += chunkSize) {
         if (disposeFlag) break
@@ -88,8 +88,7 @@ export async function startRecognition(
           }
         }
         if (results.length > 0) {
-          // Avoid blocking the main thread
-          await sleep(0)
+          await waitForIdle()
         }
       }
     }
@@ -102,4 +101,3 @@ export async function startRecognition(
 
   return dispose
 }
-
