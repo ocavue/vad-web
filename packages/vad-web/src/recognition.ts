@@ -1,4 +1,5 @@
 import type { DisposeFunction } from './types'
+import { sleep } from './utils/sleep'
 import { VADPipeline } from './vad-pipeline'
 
 export interface RecognitionOptions {
@@ -58,8 +59,6 @@ export async function startRecognition(
       await audioContext.decodeAudioData(audioDataBuffer)
     const sampleRate = decoded.sampleRate
 
-    const audioData = decoded.getChannelData(0)
-
     // Each chunk contains 128 samples, which is same as the `AudioWorkletProcessor.process` method.
     const chunkSize = 128
 
@@ -69,11 +68,13 @@ export async function startRecognition(
     })
 
     const handle = async () => {
+      // Avoid blocking the main thread
+      await sleep(0)
+      const audioData = decoded.getChannelData(0)
+      await sleep(0)
+
       for (let i = 0; i < audioData.length; i += chunkSize) {
         if (disposeFlag) break
-
-        // Avoid blocking the main thread
-        await new Promise((resolve) => setTimeout(resolve, 0))
 
         const chunk = audioData.slice(i, i + chunkSize)
         const results = pipeline.process(new Float32Array(chunk))
@@ -86,6 +87,10 @@ export async function startRecognition(
             onSpeech?.()
           }
         }
+        if (results.length > 0) {
+          // Avoid blocking the main thread
+          await sleep(0)
+        }
       }
     }
 
@@ -97,3 +102,4 @@ export async function startRecognition(
 
   return dispose
 }
+
