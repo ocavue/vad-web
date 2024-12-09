@@ -1,3 +1,4 @@
+import type { DisposeFunction } from './types'
 import type {
   AudioVADGetMessage,
   AudioVADPostMessage,
@@ -36,7 +37,7 @@ export interface RecordingOptions {
  *
  * @returns A function to stop the recording session.
  */
-export function startRecording(options: RecordingOptions): () => void {
+export async function startRecording(options: RecordingOptions): Promise<DisposeFunction> {
   const {
     onAudioData,
     onSilence,
@@ -62,64 +63,62 @@ export function startRecording(options: RecordingOptions): () => void {
   }
 
   // Dispose function to stop recording
-  const dispose = () => {
+  const dispose = async () => {
     if (workletNode) {
       post({ type: 'flush' })
       workletNode.port.close()
     }
     sourceNode?.disconnect()
-    void audioContext?.close()
+    await audioContext?.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
   }
 
-  async function init() {
-    try {
-      // Get microphone access
-      mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const audioTrack = mediaStream.getAudioTracks()[0]
-      const settings = audioTrack.getSettings()
-      const inputSampleRate = settings.sampleRate
+  try {
+    // Get microphone access
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    const audioTrack = mediaStream.getAudioTracks()[0]
+    const settings = audioTrack.getSettings()
+    const inputSampleRate = settings.sampleRate
 
-      // Create AudioContext with the input sample rate
-      const desiredSampleRate = inputSampleRate || 48000
-      audioContext = new AudioContext({ sampleRate: desiredSampleRate })
+    // Create AudioContext with the input sample rate
+    const desiredSampleRate = inputSampleRate || 48000
+    audioContext = new AudioContext({ sampleRate: desiredSampleRate })
 
-      // Add VAD processor
-      await audioContext.audioWorklet.addModule(audioWorkletURL)
+    // Add VAD processor
+    await audioContext.audioWorklet.addModule(audioWorkletURL)
 
-      // Create source node from microphone
-      sourceNode = audioContext.createMediaStreamSource(mediaStream)
+    // Create source node from microphone
+    sourceNode = audioContext.createMediaStreamSource(mediaStream)
 
-      // Create VAD node
-      const processorOptions: AudioVADProcessorOptions = {
-        sampleRate: audioContext.sampleRate,
-        maxDurationSeconds,
-      }
-      workletNode = new AudioWorkletNode(audioContext, 'AudioVADProcessor', {
-        processorOptions,
-      })
-
-      // Connect nodes
-      sourceNode.connect(workletNode)
-
-      // Handle messages from VAD node
-      on((message) => {
-        if (message.type === 'audioData') {
-          const audioBuffer = message.audioBuffer
-          onAudioData?.(new Float32Array(audioBuffer), audioContext.sampleRate)
-        } else if (message.type === 'silence') {
-          onSilence?.()
-        } else if (message.type === 'speech') {
-          onSpeech?.()
-        }
-      })
-    } catch (err) {
-      dispose()
-      throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
+    // Create VAD node
+    const processorOptions: AudioVADProcessorOptions = {
+      sampleRate: audioContext.sampleRate,
+      maxDurationSeconds,
     }
+    workletNode = new AudioWorkletNode(audioContext, 'AudioVADProcessor', {
+      processorOptions,
+    })
+
+    // Connect nodes
+    sourceNode.connect(workletNode)
+
+    // Handle messages from VAD node
+    on((message) => {
+      if (message.type === 'audioData') {
+        const audioBuffer = message.audioBuffer
+        onAudioData?.(new Float32Array(audioBuffer), audioContext.sampleRate)
+      } else if (message.type === 'silence') {
+        onSilence?.()
+      } else if (message.type === 'speech') {
+        onSpeech?.()
+      }
+    })
+  } catch (err) {
+    void dispose()
+    throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
   }
 
-  void init()
+
 
   return dispose
 }
