@@ -18,7 +18,7 @@
         "name": "next"
       }
     ],
-    "outDir": "node_modules/.cache/ts-out",
+    "outDir": "${configDir}/node_modules/.cache/ts-out",
     "composite": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
