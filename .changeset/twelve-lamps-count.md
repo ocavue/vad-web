@@ -2,4 +2,4 @@
 'vad-web': patch
 ---
 
-Speed up recognition by sleeping less.
+`startRecognition` now can simulate real-time processing by adding delays to match the audio duration.
