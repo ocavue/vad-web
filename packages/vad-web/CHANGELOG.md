@@ -1,5 +1,11 @@
 # vad-web
 
+## 0.4.0
+
+### Minor Changes
+
+- b19d419: `startRecognition` now can simulate real-time processing by adding delays to match the audio duration.
+
 ## 0.3.0
 
 ### Minor Changes
