@@ -1,4 +1,6 @@
 import type { DisposeFunction } from './types'
+import { sleep } from './utils/sleep'
+import { waitForIdle } from './utils/wait-for-idle'
 import { VADPipeline } from './vad-pipeline'
 
 export interface RecognitionOptions {
@@ -26,6 +28,11 @@ export interface RecognitionOptions {
    * Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttpRequest, or FileReader.
    */
   audioData: ArrayBuffer
+
+  /**
+   * If true, simulates real-time processing by adding delays to match the audio duration.
+   */
+  realTime?: boolean
 }
 
 /**
@@ -42,6 +49,7 @@ export async function startRecognition(
     onSpeech,
     maxDurationSeconds,
     audioData: audioDataBuffer,
+    realTime = false,
   } = options
 
   let disposeFlag = false
@@ -58,8 +66,6 @@ export async function startRecognition(
       await audioContext.decodeAudioData(audioDataBuffer)
     const sampleRate = decoded.sampleRate
 
-    const audioData = decoded.getChannelData(0)
-
     // Each chunk contains 128 samples, which is same as the `AudioWorkletProcessor.process` method.
     const chunkSize = 128
 
@@ -69,14 +75,29 @@ export async function startRecognition(
     })
 
     const handle = async () => {
+      await waitForIdle()
+      const audioData = decoded.getChannelData(0)
+      await waitForIdle()
+
+      const start = performance.now()
+
       for (let i = 0; i < audioData.length; i += chunkSize) {
         if (disposeFlag) break
 
-        // Avoid blocking the main thread
-        await new Promise((resolve) => setTimeout(resolve, 0))
-
         const chunk = audioData.slice(i, i + chunkSize)
         const results = pipeline.process(new Float32Array(chunk))
+
+        if (realTime && results.length > 0) {
+          await waitForIdle()
+
+          const millisecondsPassed = performance.now() - start
+          const audioMillisecondsPassed = (i / sampleRate) * 1000
+
+          if (millisecondsPassed < audioMillisecondsPassed) {
+            await sleep(audioMillisecondsPassed - millisecondsPassed)
+          }
+        }
+
         for (const result of results) {
           if (result.type === 'audioData') {
             onAudioData?.(new Float32Array(result.audioBuffer), sampleRate)
