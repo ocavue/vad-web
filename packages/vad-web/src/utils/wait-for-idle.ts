@@ -1,12 +1,11 @@
-import { sleep } from "./sleep"
-
-
+import { sleep } from './sleep'
 
 export function waitForIdle(timeout = 100): Promise<void> {
-    if (typeof requestIdleCallback !== 'undefined') {
-        return new Promise<void>((resolve) => requestIdleCallback(() => resolve(), { timeout }))
-    }
+  if (typeof requestIdleCallback !== 'undefined') {
+    return new Promise<void>((resolve) =>
+      requestIdleCallback(() => resolve(), { timeout }),
+    )
+  }
 
-    return sleep(0)
+  return sleep(0)
 }
-
