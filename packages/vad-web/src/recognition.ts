@@ -33,7 +33,9 @@ export interface RecognitionOptions {
  *
  * @returns A function to stop the recognition session.
  */
-export async function startRecognition(options: RecognitionOptions): Promise<DisposeFunction> {
+export async function startRecognition(
+  options: RecognitionOptions,
+): Promise<DisposeFunction> {
   const {
     onAudioData,
     onSilence,
@@ -71,7 +73,7 @@ export async function startRecognition(options: RecognitionOptions): Promise<Dis
         if (disposeFlag) break
 
         // Avoid blocking the main thread
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await new Promise((resolve) => setTimeout(resolve, 0))
 
         const chunk = audioData.slice(i, i + chunkSize)
         const results = pipeline.process(new Float32Array(chunk))
@@ -88,8 +90,6 @@ export async function startRecognition(options: RecognitionOptions): Promise<Dis
     }
 
     void handle()
-
-
   } catch (err) {
     void dispose()
     throw new Error(`Failed to initialize recording: ${err}`, { cause: err })

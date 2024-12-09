@@ -37,7 +37,9 @@ export interface RecordingOptions {
  *
  * @returns A function to stop the recording session.
  */
-export async function startRecording(options: RecordingOptions): Promise<DisposeFunction> {
+export async function startRecording(
+  options: RecordingOptions,
+): Promise<DisposeFunction> {
   const {
     onAudioData,
     onSilence,
@@ -117,8 +119,6 @@ export async function startRecording(options: RecordingOptions): Promise<Dispose
     void dispose()
     throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
   }
-
-
 
   return dispose
 }
