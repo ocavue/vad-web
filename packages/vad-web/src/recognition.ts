@@ -1,5 +1,4 @@
 import type { DisposeFunction } from './types'
-import { sleep } from './utils/sleep'
 import { waitForIdle } from './utils/wait-for-idle'
 import { VADPipeline } from './vad-pipeline'
 
