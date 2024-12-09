@@ -15,7 +15,10 @@ export class AudioFrameQueue {
       const bufferRemaining = this.frameSize - this.bufferPosition
       const toCopy = Math.min(inputRemaining, bufferRemaining)
 
-      this.buffer.set(input.subarray(inputPosition, inputPosition + toCopy), this.bufferPosition)
+      this.buffer.set(
+        input.subarray(inputPosition, inputPosition + toCopy),
+        this.bufferPosition,
+      )
       this.bufferPosition += toCopy
       inputPosition += toCopy
 

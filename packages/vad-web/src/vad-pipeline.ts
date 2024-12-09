@@ -23,15 +23,15 @@ export interface VADPipelineOptions {
 
 export type PipelineProcessResult =
   | {
-    type: 'speech'
-  }
+      type: 'speech'
+    }
   | {
-    type: 'silence'
-  }
+      type: 'silence'
+    }
   | {
-    type: 'audioData'
-    audioBuffer: Float32Array
-  }
+      type: 'audioData'
+      audioBuffer: Float32Array
+    }
 
 export class VADPipeline {
   private vad: VADAlgorithm
@@ -48,7 +48,8 @@ export class VADPipeline {
     this.speechFramesThreshold = options.speechFramesThreshold ?? 10
     this.vad = new VADAlgorithm(sampleRate)
     this.inputBuffer = new AudioFrameQueue(this.vad.frame_size)
-    this.maxFramesLength = options.maxDurationSeconds * sampleRate / this.vad.frame_size
+    this.maxFramesLength =
+      (options.maxDurationSeconds * sampleRate) / this.vad.frame_size
   }
 
   process(input: Float32Array): PipelineProcessResult[] {
@@ -66,7 +67,6 @@ export class VADPipeline {
 
       // If we are recording.
       if (this.isRecording) {
-
         // Check if we have enough silent frames to consider the speech over, and if so, send the audio data.
         if (result.is_silent_frame_counter >= this.silentFramesThreshold) {
           results.push({ type: 'silence' })
@@ -80,12 +80,10 @@ export class VADPipeline {
         if (this.frames.length >= this.maxFramesLength) {
           results.push(this.flush())
         }
-
       }
 
       // If we are not recording
       else {
-
         // Check if we have enough speech frames to consider the speech started
         if (result.is_speech_frame_counter >= this.speechFramesThreshold) {
           results.push({ type: 'speech' })
@@ -97,20 +95,14 @@ export class VADPipeline {
           this.frames.push(frame)
         }
       }
-
-
     }
 
     return results
   }
-
-
 
   flush() {
     const audioBuffer = concatFloat32Array(this.frames)
     this.frames = []
     return { type: 'audioData', audioBuffer } satisfies PipelineProcessResult
   }
-
-
 }

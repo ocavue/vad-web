@@ -50,7 +50,6 @@ export function startRecording(options: RecordingOptions): () => void {
   let sourceNode: MediaStreamAudioSourceNode
   let workletNode: AudioWorkletNode
 
-
   const post = (message: AudioVADGetMessage) => {
     workletNode.port.postMessage(message)
   }
@@ -96,7 +95,9 @@ export function startRecording(options: RecordingOptions): () => void {
         sampleRate: audioContext.sampleRate,
         maxDurationSeconds,
       }
-      workletNode = new AudioWorkletNode(audioContext, 'AudioVADProcessor', { processorOptions })
+      workletNode = new AudioWorkletNode(audioContext, 'AudioVADProcessor', {
+        processorOptions,
+      })
 
       // Connect nodes
       sourceNode.connect(workletNode)

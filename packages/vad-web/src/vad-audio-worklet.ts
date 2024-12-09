@@ -10,11 +10,9 @@ export type AudioVADProcessorOptions = VADPipelineOptions
 
 export type AudioVADPostMessage = PipelineProcessResult
 
-
 export type AudioVADGetMessage = {
   type: 'flush'
 }
-
 
 class AudioVADProcessor extends AudioWorkletProcessor {
   private pipeline: VADPipeline
@@ -49,7 +47,6 @@ class AudioVADProcessor extends AudioWorkletProcessor {
     }
   }
 
-
   /**
    * Add a message listener.
    */
@@ -59,8 +56,6 @@ class AudioVADProcessor extends AudioWorkletProcessor {
       callback(event.data as AudioVADGetMessage)
     }
   }
-
-
 
   /**
    * Process audio data.
