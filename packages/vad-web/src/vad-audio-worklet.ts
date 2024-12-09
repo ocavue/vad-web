@@ -10,9 +10,11 @@ export type AudioVADProcessorOptions = VADPipelineOptions
 
 export type AudioVADPostMessage = PipelineProcessResult
 
+
 export type AudioVADGetMessage = {
   type: 'flush'
 }
+
 
 class AudioVADProcessor extends AudioWorkletProcessor {
   private pipeline: VADPipeline
@@ -23,16 +25,12 @@ class AudioVADProcessor extends AudioWorkletProcessor {
     const processorOptions =
       options?.processorOptions as AudioVADProcessorOptions
 
-    this.pipeline = new VADPipeline({
-      sampleRate: processorOptions.sampleRate,
-      silentFramesThreshold: processorOptions.silentFramesThreshold,
-      speechFramesThreshold: processorOptions.speechFramesThreshold,
-    })
+    this.pipeline = new VADPipeline(processorOptions)
 
     this.on((message) => {
       if (message.type === 'flush') {
         const result = this.pipeline.flush()
-        if (result) {
+        if (result.audioBuffer.length > 0) {
           this.post(result)
         }
       }
@@ -51,6 +49,7 @@ class AudioVADProcessor extends AudioWorkletProcessor {
     }
   }
 
+
   /**
    * Add a message listener.
    */
@@ -60,6 +59,8 @@ class AudioVADProcessor extends AudioWorkletProcessor {
       callback(event.data as AudioVADGetMessage)
     }
   }
+
+
 
   /**
    * Process audio data.

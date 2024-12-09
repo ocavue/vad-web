@@ -1,6 +1,7 @@
 import type {
   AudioVADGetMessage,
   AudioVADPostMessage,
+  AudioVADProcessorOptions,
 } from './vad-audio-worklet'
 
 export interface RecordingOptions {
@@ -47,34 +48,29 @@ export function startRecording(options: RecordingOptions): () => void {
   let mediaStream: MediaStream
   let audioContext: AudioContext
   let sourceNode: MediaStreamAudioSourceNode
-  let vadNode: AudioWorkletNode
-  let disposeFlag = false
-  let recordingTimeout: ReturnType<typeof setTimeout> | null = null
+  let workletNode: AudioWorkletNode
+
 
   const post = (message: AudioVADGetMessage) => {
-    vadNode.port.postMessage(message)
+    workletNode.port.postMessage(message)
   }
 
   const on = (callback: (message: AudioVADPostMessage) => void) => {
     // eslint-disable-next-line unicorn/prefer-add-event-listener
-    vadNode.port.onmessage = (event) => {
+    workletNode.port.onmessage = (event) => {
       callback(event.data as AudioVADPostMessage)
     }
   }
 
   // Dispose function to stop recording
   const dispose = () => {
-    disposeFlag = true
-    if (vadNode) {
+    if (workletNode) {
       post({ type: 'flush' })
-      vadNode.port.close()
+      workletNode.port.close()
     }
     sourceNode?.disconnect()
     void audioContext?.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
-    if (recordingTimeout) {
-      clearTimeout(recordingTimeout)
-    }
   }
 
   async function init() {
@@ -96,14 +92,14 @@ export function startRecording(options: RecordingOptions): () => void {
       sourceNode = audioContext.createMediaStreamSource(mediaStream)
 
       // Create VAD node
-      vadNode = new AudioWorkletNode(audioContext, 'AudioVADProcessor', {
-        processorOptions: {
-          sampleRate: audioContext.sampleRate,
-        },
-      })
+      const processorOptions: AudioVADProcessorOptions = {
+        sampleRate: audioContext.sampleRate,
+        maxDurationSeconds,
+      }
+      workletNode = new AudioWorkletNode(audioContext, 'AudioVADProcessor', { processorOptions })
 
       // Connect nodes
-      sourceNode.connect(vadNode)
+      sourceNode.connect(workletNode)
 
       // Handle messages from VAD node
       on((message) => {
@@ -115,17 +111,6 @@ export function startRecording(options: RecordingOptions): () => void {
         } else if (message.type === 'speech') {
           onSpeech?.()
         }
-
-        // Set a timeout to stop recording after maxDurationSeconds
-        if (recordingTimeout) {
-          clearTimeout(recordingTimeout)
-        }
-        recordingTimeout = setTimeout(() => {
-          if (disposeFlag) return
-
-          // Stop recording
-          post({ type: 'flush' })
-        }, maxDurationSeconds * 1000)
       })
     } catch (err) {
       dispose()
