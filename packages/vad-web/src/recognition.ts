@@ -37,7 +37,7 @@ export function startRecognition(options: RecognitionOptions): () => void {
     onAudioData,
     onSilence,
     onSpeech,
-    // maxDurationSeconds,
+    maxDurationSeconds,
     audioData: audioDataBuffer,
   } = options
 
@@ -62,7 +62,8 @@ export function startRecognition(options: RecognitionOptions): () => void {
       const chunkSize = 128
 
       const pipeline = new VADPipeline({
-        sampleRate: sampleRate,
+        sampleRate,
+        maxDurationSeconds,
       })
 
       // TODO: handle maxDurationFrames

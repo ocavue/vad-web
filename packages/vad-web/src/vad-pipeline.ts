@@ -14,6 +14,11 @@ export interface VADPipelineOptions {
    * The minimum number of speech frames before a speech is considered to be started.
    */
   speechFramesThreshold?: number
+
+  /**
+   * The maximum duration of the a single chunk of audio data in seconds.
+   */
+  maxDurationSeconds: number
 }
 
 export type PipelineProcessResult =
@@ -35,6 +40,7 @@ export class VADPipeline {
   private frames: Float32Array[] = []
   private silentFramesThreshold: number
   private speechFramesThreshold: number
+  private maxFramesLength: number
 
   constructor(options: VADPipelineOptions) {
     const sampleRate = options.sampleRate
@@ -42,6 +48,8 @@ export class VADPipeline {
     this.speechFramesThreshold = options.speechFramesThreshold ?? 10
     this.vad = new VADAlgorithm(sampleRate)
     this.inputBuffer = new AudioFrameQueue(this.vad.frame_size)
+    this.maxFramesLength =
+      (options.maxDurationSeconds * sampleRate) / this.vad.frame_size
   }
 
   process(input: Float32Array): PipelineProcessResult[] {
@@ -57,17 +65,26 @@ export class VADPipeline {
 
       const result = this.vad.process(frame)
 
+      // If we are recording.
       if (this.isRecording) {
+        // Check if we have enough silent frames to consider the speech over, and if so, send the audio data.
         if (result.is_silent_frame_counter >= this.silentFramesThreshold) {
           results.push({ type: 'silence' })
           this.isRecording = false
-          const audioBuffer = concatFloat32Array(this.frames)
-          this.frames = []
-          results.push({ type: 'audioData', audioBuffer })
+          results.push(this.flush())
         } else {
           this.frames.push(frame)
         }
-      } else {
+
+        // Check if we have reached the maximum duration, and if so, send the audio data.
+        if (this.frames.length >= this.maxFramesLength) {
+          results.push(this.flush())
+        }
+      }
+
+      // If we are not recording
+      else {
+        // Check if we have enough speech frames to consider the speech started
         if (result.is_speech_frame_counter >= this.speechFramesThreshold) {
           results.push({ type: 'speech' })
           this.isRecording = true
@@ -83,13 +100,9 @@ export class VADPipeline {
     return results
   }
 
-  flush(): PipelineProcessResult | undefined {
-    if (this.frames.length === 0) {
-      return undefined
-    }
-
+  flush() {
     const audioBuffer = concatFloat32Array(this.frames)
     this.frames = []
-    return { type: 'audioData', audioBuffer }
+    return { type: 'audioData', audioBuffer } satisfies PipelineProcessResult
   }
 }

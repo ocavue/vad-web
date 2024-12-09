@@ -23,16 +23,12 @@ class AudioVADProcessor extends AudioWorkletProcessor {
     const processorOptions =
       options?.processorOptions as AudioVADProcessorOptions
 
-    this.pipeline = new VADPipeline({
-      sampleRate: processorOptions.sampleRate,
-      silentFramesThreshold: processorOptions.silentFramesThreshold,
-      speechFramesThreshold: processorOptions.speechFramesThreshold,
-    })
+    this.pipeline = new VADPipeline(processorOptions)
 
     this.on((message) => {
       if (message.type === 'flush') {
         const result = this.pipeline.flush()
-        if (result) {
+        if (result.audioBuffer.length > 0) {
           this.post(result)
         }
       }

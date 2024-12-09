@@ -3,7 +3,7 @@
     "target": "es2020",
     "module": "esnext",
     "lib": ["esnext", "dom"],
-    "outDir": "node_modules/.cache/ts-out",
+    "outDir": "${configDir}/node_modules/.cache/ts-out",
     "allowJs": true,
     "moduleResolution": "Bundler",
     "esModuleInterop": true,
