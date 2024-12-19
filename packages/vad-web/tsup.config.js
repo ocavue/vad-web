@@ -8,7 +8,7 @@ export default defineConfig([
     tsconfig: 'tsconfig.build.json',
   },
   {
-    entry: ['src/vad-audio-worklet.js'],
+    entry: ['src/vad-audio-worklet.ts'],
     format: ['esm'],
     minify: true,
   },

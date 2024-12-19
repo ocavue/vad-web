@@ -3,7 +3,7 @@ import type {
   VADAudioGetMessage,
   VADAudioPostMessage,
   VADAudioProcessorOptions,
-} from './vad-audio-processor'
+} from './vad-audio-worklet'
 
 export interface RecordingOptions {
   /**

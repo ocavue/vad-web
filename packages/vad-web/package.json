@@ -23,8 +23,8 @@
       "import": "./src/index.ts"
     },
     "./vad-audio-worklet": {
-      "types": "./src/vad-audio-worklet.js",
-      "import": "./src/vad-audio-worklet.js"
+      "types": "./src/vad-audio-worklet.ts",
+      "import": "./dist/vad-audio-worklet.js"
     }
   },
   "typesVersions": {

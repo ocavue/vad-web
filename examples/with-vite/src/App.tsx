@@ -1,4 +1,4 @@
-import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
+import audioWorkletURL from 'vad-web/vad-audio-worklet.js?url'
 
 import Recorder from './recorder'
 
