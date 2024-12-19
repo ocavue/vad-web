@@ -39,7 +39,7 @@
     "dist"
   ],
   "scripts": {
-    "docs": "typedoc --tsconfig ./tsconfig.build.json --plugin typedoc-plugin-md --out temp src/index.ts && mv temp/README.md ./README.md",
+    "docs": "typedoc --tsconfig ./tsconfig.build.json --sort documents-first --plugin typedoc-plugin-md --out temp src/index.ts && mv temp/README.md ./README.md",
     "build": "tsup && pnpm run docs"
   },
   "devDependencies": {

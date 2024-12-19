@@ -13,7 +13,7 @@
  *
  * ## Credits
  *
- * - This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library, 
+ * - This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library,
  *   which is licensed under the [MIT License](https://github.com/indutny/fft.js?tab=readme-ov-file#license).
  *
  * - The VAD algorithm is based on the paper:
@@ -30,6 +30,12 @@
  * @module
  */
 
-export { startRecognition, type RecognitionOptions } from './recognition'
-export { startRecording, type RecordingOptions } from './recording'
+export { startRecording } from './recording'
+
+export { startRecognition } from './recognition'
+
+export type { RecordingOptions } from './recording'
+
+export type { RecognitionOptions } from './recognition'
+
 export type { DisposeFunction } from './types'
