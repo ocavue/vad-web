@@ -42,8 +42,11 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       vad-web:
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/vad-web
+      wav-file-encoder:
+        specifier: ^1.0.4
+        version: 1.0.4
     devDependencies:
       '@types/node':
         specifier: ^20.17.9
@@ -79,11 +82,14 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
       vad-web:
-        specifier: workspace:*
+        specifier: '*'
         version: link:../../packages/vad-web
       vite:
         specifier: ^5.0.0
         version: 5.4.11(@types/node@20.17.9)
+      wav-file-encoder:
+        specifier: ^1.0.4
+        version: 1.0.4
 
   packages/vad-web:
     devDependencies:
@@ -3208,6 +3214,9 @@ packages:
     engines: {node: ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: '>=6.0.0'
+
+  wav-file-encoder@1.0.4:
+    resolution: {integrity: sha512-OfJ8DZ8R83zO5OrYnVLpeL97Y/TNMxJiypk8/HZZA+Ko93ZJO1/K8tiWGa02u/iOFwTAqWnyEttoIEEfWe8zhQ==}
 
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
@@ -6687,6 +6696,8 @@ snapshots:
       semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
+
+  wav-file-encoder@1.0.4: {}
 
   webidl-conversions@4.0.2: {}
 
