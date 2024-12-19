@@ -106,8 +106,8 @@ importers:
         specifier: ^0.27.5
         version: 0.27.5(typescript@5.7.2)
       typedoc-plugin-md:
-        specifier: ^0.4.3
-        version: 0.4.3(typedoc@0.27.5(typescript@5.7.2))
+        specifier: ^0.5.0
+        version: 0.5.0(typedoc@0.27.5(typescript@5.7.2))
       typescript:
         specifier: ^5.7.2
         version: 5.7.2
@@ -3179,8 +3179,8 @@ packages:
     resolution: {integrity: sha512-/OxDN6OtAk5KBpGb28T+HZc2M+ADtvRxXrKKbUwtsLgdoxgX13hyy7ek6bFRl5+aBs2yZzB0c4CnQfAtVypW/g==}
     engines: {node: '>= 0.4'}
 
-  typedoc-plugin-md@0.4.3:
-    resolution: {integrity: sha512-eNEEyan3GDCaDcwYCFfVEKOPMXXW1fQxVvCwOF/vNPSmVr0tty/0P738evbG4dF7ssS6rm78J3YRz94xeJaaOg==}
+  typedoc-plugin-md@0.5.0:
+    resolution: {integrity: sha512-/9R60Fl9/JWPk7mwywOhbFEdzxf8REyliIxMLzsEsawaQbe2AYOLExoPf3DaPM9O2Uo5txnAOLNoShNZw09wOQ==}
     peerDependencies:
       typedoc: ^0.27.1
 
@@ -6790,7 +6790,7 @@ snapshots:
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
 
-  typedoc-plugin-md@0.4.3(typedoc@0.27.5(typescript@5.7.2)):
+  typedoc-plugin-md@0.5.0(typedoc@0.27.5(typescript@5.7.2)):
     dependencies:
       '@sindresorhus/slugify': 2.2.1
       change-case: 5.4.4
@@ -6798,6 +6798,7 @@ snapshots:
       remark-stringify: 11.0.0
       typedoc: 0.27.5(typescript@5.7.2)
       unified: 11.0.5
+      unist-util-visit: 5.0.0
     transitivePeerDependencies:
       - supports-color
 

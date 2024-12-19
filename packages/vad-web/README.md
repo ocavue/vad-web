@@ -27,7 +27,9 @@ npm install vad-web
 * The VAD algorithm implementation is based on the [`vad-audio-worklet`](https://github.com/thurti/vad-audio-worklet) library,
   which is licensed under the [MIT License](https://github.com/thurti/vad-audio-worklet/blob/main/LICENSE).
 
-## startRecording <a id="start-recording" href="#start-recording">#</a>
+## API Reference
+
+### startRecording <a id="start-recording" href="#start-recording">#</a>
 
 ```ts
 function startRecording(options: RecordingOptions): Promise<DisposeFunction>
@@ -39,7 +41,7 @@ Starts a recording session that records audio from microphone.
 
 A function to stop the recording session.
 
-## startRecognition <a id="start-recognition" href="#start-recognition">#</a>
+### startRecognition <a id="start-recognition" href="#start-recognition">#</a>
 
 ```ts
 function startRecognition(options: RecognitionOptions): Promise<DisposeFunction>
@@ -51,7 +53,7 @@ Starts a recognition session that processes the given audio data.
 
 A function to stop the recognition session.
 
-## RecordingOptions <a id="recording-options" href="#recording-options">#</a>
+### RecordingOptions <a id="recording-options" href="#recording-options">#</a>
 
 <dl>
 
@@ -134,7 +136,7 @@ const audioWorkletURL = '/vad-audio-worklet.js'
 
 </dl>
 
-## RecognitionOptions <a id="recognition-options" href="#recognition-options">#</a>
+### RecognitionOptions <a id="recognition-options" href="#recognition-options">#</a>
 
 <dl>
 
@@ -212,7 +214,7 @@ If true, simulates real-time processing by adding delays to match the audio dura
 
 </dl>
 
-## DisposeFunction <a id="dispose-function" href="#dispose-function">#</a>
+### DisposeFunction <a id="dispose-function" href="#dispose-function">#</a>
 
 A function that should be called to stop the recording or recognition session.
 
