@@ -29,8 +29,14 @@ export default function Recorder({
         const audioURL = URL.createObjectURL(audioBlob)
         setAudioURLs((prev) => [...prev, audioURL])
       },
-      onSilence: () => setIsSpeaking(false),
-      onSpeech: () => setIsSpeaking(true),
+      onSilence: () => {
+        console.log('Silence detected')
+        setIsSpeaking(false)
+      },
+      onSpeech: () => {
+        console.log('Speech detected')
+        setIsSpeaking(true)
+      },
       maxDurationSeconds: 5,
       audioWorkletURL,
     })
