@@ -5,6 +5,15 @@
 A lightweight, browser-based Voice Activity Detection (VAD) library that
 detects speech in real-time audio streams.
 
+## Online demo
+
+https://vad-web.vercel.app
+
+## Examples
+
+* [With Vite.js](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
+* [With Next.js](https://github.com/ocavue/vad-web/tree/master/examples/with-next)
+
 ## Installation
 
 ```bash
