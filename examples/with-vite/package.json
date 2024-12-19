@@ -13,6 +13,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "typescript": "^5.7.2",
     "vad-web": "workspace:*",
     "vite": "^5.0.0"
   }
