@@ -1,3 +1,5 @@
+import pLimit from 'p-limit'
+
 import type { DisposeFunction } from './types'
 import type {
   VADAudioGetMessage,
@@ -49,14 +51,18 @@ export interface RecordingOptions {
   audioWorkletURL: string | URL
 }
 
-/**
- * Starts a recording session that records audio from microphone.
- *
- * @returns A function to stop the recording session.
- */
-export async function startRecording(
-  options: RecordingOptions,
-): Promise<DisposeFunction> {
+const disposeFunctions: DisposeFunction[] = []
+
+async function disposeAll() {
+  while (disposeFunctions.length > 0) {
+    await disposeFunctions.shift()?.()
+  }
+}
+
+async function start(options: RecordingOptions): Promise<void> {
+  // Dispose all previous recording sessions before starting a new one.
+  await disposeAll()
+
   const {
     onAudioData,
     onSilence,
@@ -65,16 +71,20 @@ export async function startRecording(
     audioWorkletURL,
   } = options
 
-  let mediaStream: MediaStream
-  let audioContext: AudioContext
-  let sourceNode: MediaStreamAudioSourceNode
-  let workletNode: AudioWorkletNode
+  let mediaStream: MediaStream | undefined
+  let audioContext: AudioContext | undefined
+  let sourceNode: MediaStreamAudioSourceNode | undefined
+  let workletNode: AudioWorkletNode | undefined
 
-  const post = (message: VADAudioGetMessage) => {
-    workletNode.port.postMessage(message)
+  const postMessage = (message: VADAudioGetMessage) => {
+    workletNode?.port.postMessage(message)
   }
 
-  const on = (callback: (message: VADAudioPostMessage) => void) => {
+  const listenMessage = (callback: (message: VADAudioPostMessage) => void) => {
+    if (!workletNode) {
+      return
+    }
+
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     workletNode.port.onmessage = (event) => {
       callback(event.data as VADAudioPostMessage)
@@ -83,14 +93,13 @@ export async function startRecording(
 
   // Dispose function to stop recording
   const dispose = async () => {
-    if (workletNode) {
-      post({ type: 'flush' })
-      workletNode.port.close()
-    }
+    postMessage({ type: 'flush' })
+    workletNode?.port.close()
     sourceNode?.disconnect()
     await audioContext?.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
   }
+  disposeFunctions.push(dispose)
 
   try {
     // Get microphone access
@@ -124,10 +133,11 @@ export async function startRecording(
     sourceNode.connect(workletNode)
 
     // Handle messages from VAD node
-    on((message) => {
+    listenMessage((message) => {
       if (message.type === 'audioData') {
         const audioBuffer = message.audioBuffer
-        onAudioData?.(new Float32Array(audioBuffer), audioContext.sampleRate)
+        const sampleRate = audioContext!.sampleRate
+        onAudioData?.(new Float32Array(audioBuffer), sampleRate)
       } else if (message.type === 'silence') {
         onSilence?.()
       } else if (message.type === 'speech') {
@@ -138,6 +148,19 @@ export async function startRecording(
     void dispose()
     throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
   }
+}
 
-  return dispose
+const limit = pLimit(1)
+
+/**
+ * Starts a recording session that records audio from microphone.
+ *
+ * @returns A function to stop the recording session.
+ */
+export async function startRecording(
+  options: RecordingOptions,
+): Promise<DisposeFunction> {
+  // Use `limit` to ensure that only one action (start or stop) is running at a time.
+  await limit(() => start(options))
+  return () => limit(disposeAll)
 }

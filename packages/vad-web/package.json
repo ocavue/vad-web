@@ -42,6 +42,9 @@
     "docs": "typedoc --tsconfig ./tsconfig.build.json --sort documents-first --plugin typedoc-plugin-md --out temp src/index.ts && mv temp/README.md ./README.md",
     "build": "tsup && pnpm run docs"
   },
+  "dependencies": {
+    "p-limit": "^6.1.0"
+  },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.48.0",
     "fft.js": "^4.0.4",
