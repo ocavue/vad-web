@@ -36,7 +36,7 @@ export interface RecognitionOptions {
 }
 
 /**
- * Starts a recognition session.
+ * Starts a recognition session that processes the given audio data.
  *
  * @returns A function to stop the recognition session.
  */

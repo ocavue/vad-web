@@ -28,12 +28,29 @@ export interface RecordingOptions {
 
   /**
    * The URL of the audio worklet script.
+   *
+   * It is used to process audio in a separate thread with very low latency.
+   *
+   * If you are using Vite, you can use the following import:
+   *
+   * ```ts
+   * // audioWorkletURL is a string pointing to the audio worklet script
+   * import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
+   * ```
+   *
+   * If you are using other bundlers like WebPack, you need copy the
+   * [`vad-audio-worklet.js`](https://unpkg.com/vad-web/dist/vad-audio-worklet.js)
+   * file to your public directory, then set the `audioWorkletURL` to the path of the file:
+   *
+   * ```ts
+   * const audioWorkletURL = '/vad-audio-worklet.js'
+   * ```
    */
   audioWorkletURL: string | URL
 }
 
 /**
- * Starts a recording session.
+ * Starts a recording session that records audio from microphone.
  *
  * @returns A function to stop the recording session.
  */

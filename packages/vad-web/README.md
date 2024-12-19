@@ -1,8 +1,9 @@
 # vad-web
 
-[![NPM version](https://img.shields.io/npm/v/vad-web?color=a1b858&label=)](https://www.npmjs.com/package/vad-web)
+[![NPM version](https://img.shields.io/npm/v/vad-web?color=a1b858)](https://www.npmjs.com/package/vad-web)
 
-A lightweight, browser-based Voice Activity Detection (VAD) library that detects speech in real-time audio streams.
+A lightweight, browser-based Voice Activity Detection (VAD) library that
+detects speech in real-time audio streams.
 
 ## Installation
 
@@ -10,69 +11,209 @@ A lightweight, browser-based Voice Activity Detection (VAD) library that detects
 npm install vad-web
 ```
 
-## Usage
+## Credits
 
-```ts
-import { startRecording } from 'vad-web'
-import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
+* This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library,
+  which is licensed under the [MIT License](https://github.com/indutny/fft.js?tab=readme-ov-file#license).
 
-// Start recording
-const dispose = startRecording({
-  // The URL of the audio worklet script. More on this below.
-  audioWorkletURL,
+* The VAD algorithm is based on the paper:
 
-  // The maximum duration of `audioData` received by `onAudioData`.
-  maxDurationSeconds: 5,
+  Moattar, Mohammad & Homayoonpoor, Mahdi. (2010). A simple but efficient
+  real-time voice activity detection algorithm. European Signal Processing
+  Conference.
 
-  // Called when audio data is received.
-  onAudioData: (audioData: Float32Array, sampleRate: number) => {
-    // Handle recorded audio data
-    console.log(`Received audio: ${audioData.length} samples @ ${sampleRate}Hz`)
-  },
+  https://www.researchgate.net/publication/255667085\_A\_simple\_but\_efficient\_real-time\_voice\_activity\_detection\_algorithm
 
-  // Called when silence is detected.
-  onSilence: () => {
-    console.log('Silence detected')
-  },
+* The VAD algorithm implementation is based on the [`vad-audio-worklet`](https://github.com/thurti/vad-audio-worklet) library,
+  which is licensed under the [MIT License](https://github.com/thurti/vad-audio-worklet/blob/main/LICENSE).
 
-  // Called when speech is detected.
-  onSpeech: () => {
-    console.log('Speech detected')
-  },
-})
+## RecognitionOptions <a id="recognition-options" href="#recognition-options">#</a>
 
-// Stop recording
-dispose()
-```
+<dl>
 
-### audioWorkletURL
+<dt>
 
-The `audioWorkletURL` is the URL of the audio worklet script. It is used to load the VAD algorithm into the browser's audio context.
+`audioData: ArrayBuffer`
+
+</dt>
+
+<dd>
+
+Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttpRequest, or FileReader.
+
+</dd>
+
+<dt>
+
+`maxDurationSeconds: number`
+
+</dt>
+
+<dd>
+
+The maximum duration of the a single chunk of audio data in seconds.
+
+</dd>
+
+<dt>
+
+`onAudioData?: (audioData: Float32Array<ArrayBufferLike>, sampleRate: number) => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when audio data is received.
+
+</dd>
+
+<dt>
+
+`onSilence?: () => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when silence is detected.
+
+</dd>
+
+<dt>
+
+`onSpeech?: () => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when speech is detected.
+
+</dd>
+
+<dt>
+
+`realTime?: boolean`
+
+</dt>
+
+<dd>
+
+If true, simulates real-time processing by adding delays to match the audio duration.
+
+</dd>
+
+</dl>
+
+## RecordingOptions <a id="recording-options" href="#recording-options">#</a>
+
+<dl>
+
+<dt>
+
+`audioWorkletURL: string | URL`
+
+</dt>
+
+<dd>
+
+The URL of the audio worklet script.
+
+It is used to process audio in a separate thread with very low latency.
 
 If you are using Vite, you can use the following import:
 
 ```ts
+// audioWorkletURL is a string pointing to the audio worklet script
 import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
 ```
 
-If you are using WebPack, you need copy the [`vad-audio-worklet.js`](https://unpkg.com/vad-web/dist/vad-audio-worklet.js) file to your public directory, then you can use the following import:
+If you are using other bundlers like WebPack, you need copy the
+[`vad-audio-worklet.js`](https://unpkg.com/vad-web/dist/vad-audio-worklet.js)
+file to your public directory, then set the `audioWorkletURL` to the path of the file:
 
 ```ts
 const audioWorkletURL = '/vad-audio-worklet.js'
 ```
 
-## Credits
+</dd>
 
-- This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library, which is licensed under the [MIT License](https://github.com/indutny/fft.js?tab=readme-ov-file#license).
+<dt>
 
-- The VAD algorithm is based on the paper:
+`maxDurationSeconds: number`
 
-  Moattar, Mohammad & Homayoonpoor, Mahdi. (2010). A simple but efficient real-time voice activity detection algorithm. European Signal Processing Conference.
+</dt>
 
-  https://www.researchgate.net/publication/255667085_A_simple_but_efficient_real-time_voice_activity_detection_algorithm
+<dd>
 
-- The VAD algorithm implementation is based on the [`vad-audio-worklet`](https://github.com/thurti/vad-audio-worklet) library, which is licensed under the [MIT License](https://github.com/thurti/vad-audio-worklet/blob/main/LICENSE).
+The maximum duration of the a single chunk of audio data in seconds.
 
-## License
+</dd>
 
-MIT
+<dt>
+
+`onAudioData?: (audioData: Float32Array<ArrayBufferLike>, sampleRate: number) => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when audio data is received.
+
+</dd>
+
+<dt>
+
+`onSilence?: () => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when silence is detected.
+
+</dd>
+
+<dt>
+
+`onSpeech?: () => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when speech is detected.
+
+</dd>
+
+</dl>
+
+## DisposeFunction <a id="dispose-function" href="#dispose-function">#</a>
+
+A function that should be called to stop the recording or recognition session.
+
+**Type**: `() => Promise<void>`
+
+## startRecognition <a id="start-recognition" href="#start-recognition">#</a>
+
+```ts
+function startRecognition(options: RecognitionOptions): Promise<DisposeFunction>
+```
+
+Starts a recognition session that processes the given audio data.
+
+**Returns**
+
+A function to stop the recognition session.
+
+## startRecording <a id="start-recording" href="#start-recording">#</a>
+
+```ts
+function startRecording(options: RecordingOptions): Promise<DisposeFunction>
+```
+
+Starts a recording session that records audio from microphone.
+
+**Returns**
+
+A function to stop the recording session.

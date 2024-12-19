@@ -39,12 +39,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup"
+    "docs": "typedoc --tsconfig ./tsconfig.build.json --plugin typedoc-plugin-md --out temp src/index.ts && mv temp/README.md ./README.md",
+    "build": "tsup && pnpm run docs"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.48.0",
     "fft.js": "^4.0.4",
     "tsup": "^8.3.5",
+    "typedoc": "^0.27.5",
+    "typedoc-plugin-md": "^0.4.3",
     "typescript": "^5.7.2"
   },
   "publishConfig": {
