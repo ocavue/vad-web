@@ -60,6 +60,7 @@ async function disposeAll() {
 }
 
 async function start(options: RecordingOptions): Promise<void> {
+  // Dispose all previous recording sessions before starting a new one.
   await disposeAll()
 
   const {
@@ -159,6 +160,7 @@ const limit = pLimit(1)
 export async function startRecording(
   options: RecordingOptions,
 ): Promise<DisposeFunction> {
+  // Use `limit` to ensure that only one action (start or stop) is running at a time.
   await limit(() => start(options))
   return () => limit(disposeAll)
 }
