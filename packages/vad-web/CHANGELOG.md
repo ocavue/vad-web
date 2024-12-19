@@ -1,5 +1,11 @@
 # vad-web
 
+## 0.4.2
+
+### Patch Changes
+
+- a07fa88: Disconnect the audio worklet node when stopping recording.
+
 ## 0.4.1
 
 ### Patch Changes
