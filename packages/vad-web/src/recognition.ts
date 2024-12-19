@@ -4,7 +4,7 @@ import { waitForIdle } from './utils/wait-for-idle'
 import { VADPipeline } from './vad-pipeline'
 
 /**
- * Options for the {@link startRecognition} function.
+ * Options for {@link startRecognition}.
  */
 export interface RecognitionOptions {
   /**

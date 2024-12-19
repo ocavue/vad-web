@@ -6,7 +6,7 @@ import type {
 } from './vad-audio-worklet'
 
 /**
- * Options for the {@link startRecording} function.
+ * Options for {@link startRecording}.
  */
 export interface RecordingOptions {
   /**
