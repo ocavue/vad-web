@@ -1,3 +1,5 @@
+import pLimit from 'p-limit'
+
 import type { DisposeFunction } from './types'
 import type {
   AudioVADGetMessage,
@@ -49,14 +51,7 @@ export interface RecordingOptions {
   audioWorkletURL: string | URL
 }
 
-/**
- * Starts a recording session that records audio from microphone.
- *
- * @returns A function to stop the recording session.
- */
-export async function startRecording(
-  options: RecordingOptions,
-): Promise<DisposeFunction> {
+async function start(options: RecordingOptions): Promise<DisposeFunction> {
   const {
     onAudioData,
     onSilence,
@@ -65,16 +60,20 @@ export async function startRecording(
     audioWorkletURL,
   } = options
 
-  let mediaStream: MediaStream
-  let audioContext: AudioContext
-  let sourceNode: MediaStreamAudioSourceNode
-  let workletNode: AudioWorkletNode
+  let mediaStream: MediaStream | undefined
+  let audioContext: AudioContext | undefined
+  let sourceNode: MediaStreamAudioSourceNode | undefined
+  let workletNode: AudioWorkletNode | undefined
 
-  const post = (message: AudioVADGetMessage) => {
-    workletNode.port.postMessage(message)
+  const postMessage = (message: AudioVADGetMessage) => {
+    workletNode?.port.postMessage(message)
   }
 
-  const on = (callback: (message: AudioVADPostMessage) => void) => {
+  const listenMessage = (callback: (message: AudioVADPostMessage) => void) => {
+    if (!workletNode) {
+      return
+    }
+
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     workletNode.port.onmessage = (event) => {
       callback(event.data as AudioVADPostMessage)
@@ -83,10 +82,8 @@ export async function startRecording(
 
   // Dispose function to stop recording
   const dispose = async () => {
-    if (workletNode) {
-      post({ type: 'flush' })
-      workletNode.port.close()
-    }
+    postMessage({ type: 'flush' })
+    workletNode?.port.close()
     sourceNode?.disconnect()
     await audioContext?.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
@@ -122,10 +119,11 @@ export async function startRecording(
     sourceNode.connect(workletNode)
 
     // Handle messages from VAD node
-    on((message) => {
+    listenMessage((message) => {
       if (message.type === 'audioData') {
         const audioBuffer = message.audioBuffer
-        onAudioData?.(new Float32Array(audioBuffer), audioContext.sampleRate)
+        const sampleRate = audioContext!.sampleRate
+        onAudioData?.(new Float32Array(audioBuffer), sampleRate)
       } else if (message.type === 'silence') {
         onSilence?.()
       } else if (message.type === 'speech') {
@@ -138,4 +136,18 @@ export async function startRecording(
   }
 
   return dispose
+}
+
+const limit = pLimit(1)
+
+/**
+ * Starts a recognition session that processes the given audio data.
+ *
+ * @returns A function to stop the recognition session.
+ */
+export async function startRecognition(
+  options: RecordingOptions,
+): Promise<DisposeFunction> {
+  const dispose = await limit(() => start(options))
+  return () => limit(dispose)
 }
