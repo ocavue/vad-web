@@ -5,6 +5,9 @@ import type {
   AudioVADProcessorOptions,
 } from './vad-audio-worklet'
 
+/**
+ * Options for the {@link startRecording} function.
+ */
 export interface RecordingOptions {
   /**
    * A function that will be called when audio data is received.
