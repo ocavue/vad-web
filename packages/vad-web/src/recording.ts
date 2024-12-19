@@ -141,11 +141,11 @@ async function start(options: RecordingOptions): Promise<DisposeFunction> {
 const limit = pLimit(1)
 
 /**
- * Starts a recognition session that processes the given audio data.
+ * Starts a recording session that records audio from microphone.
  *
- * @returns A function to stop the recognition session.
+ * @returns A function to stop the recording session.
  */
-export async function startRecognition(
+export async function startRecording(
   options: RecordingOptions,
 ): Promise<DisposeFunction> {
   const dispose = await limit(() => start(options))
