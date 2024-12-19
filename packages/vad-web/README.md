@@ -55,6 +55,8 @@ A function to stop the recognition session.
 
 ### RecordingOptions <a id="recording-options" href="#recording-options">#</a>
 
+Options for [startRecording](README.md#start-recording).
+
 <dl>
 
 <dt>
@@ -137,6 +139,8 @@ const audioWorkletURL = '/vad-audio-worklet.js'
 </dl>
 
 ### RecognitionOptions <a id="recognition-options" href="#recognition-options">#</a>
+
+Options for [startRecognition](README.md#start-recognition).
 
 <dl>
 
