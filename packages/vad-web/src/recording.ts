@@ -95,6 +95,7 @@ async function start(options: RecordingOptions): Promise<void> {
   const dispose = async () => {
     postMessage({ type: 'flush' })
     workletNode?.port.close()
+    workletNode?.disconnect()
     sourceNode?.disconnect()
     await audioContext?.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
@@ -145,7 +146,6 @@ async function start(options: RecordingOptions): Promise<void> {
       }
     })
   } catch (err) {
-    void dispose()
     throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
   }
 }
