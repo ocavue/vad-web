@@ -1,9 +1,9 @@
 import type { DisposeFunction } from './types'
 import type {
-  AudioVADGetMessage,
-  AudioVADPostMessage,
-  AudioVADProcessorOptions,
-} from './vad-audio-worklet'
+  VADAudioGetMessage,
+  VADAudioPostMessage,
+  VADAudioProcessorOptions,
+} from './vad-audio-processor'
 
 export interface RecordingOptions {
   /**
@@ -70,14 +70,14 @@ export async function startRecording(
   let sourceNode: MediaStreamAudioSourceNode
   let workletNode: AudioWorkletNode
 
-  const post = (message: AudioVADGetMessage) => {
+  const post = (message: VADAudioGetMessage) => {
     workletNode.port.postMessage(message)
   }
 
-  const on = (callback: (message: AudioVADPostMessage) => void) => {
+  const on = (callback: (message: VADAudioPostMessage) => void) => {
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     workletNode.port.onmessage = (event) => {
-      callback(event.data as AudioVADPostMessage)
+      callback(event.data as VADAudioPostMessage)
     }
   }
 
@@ -110,13 +110,15 @@ export async function startRecording(
     sourceNode = audioContext.createMediaStreamSource(mediaStream)
 
     // Create VAD node
-    const processorOptions: AudioVADProcessorOptions = {
+    const processorOptions: VADAudioProcessorOptions = {
       sampleRate: audioContext.sampleRate,
       maxDurationSeconds,
     }
-    workletNode = new AudioWorkletNode(audioContext, 'AudioVADProcessor', {
-      processorOptions,
-    })
+    workletNode = new AudioWorkletNode(
+      audioContext,
+      'vad-web-audio-processor',
+      { processorOptions },
+    )
 
     // Connect nodes
     sourceNode.connect(workletNode)

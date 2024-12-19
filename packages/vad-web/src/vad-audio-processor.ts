@@ -6,22 +6,22 @@ import {
   type VADPipelineOptions,
 } from './vad-pipeline'
 
-export type AudioVADProcessorOptions = VADPipelineOptions
+export type VADAudioProcessorOptions = VADPipelineOptions
 
-export type AudioVADPostMessage = PipelineProcessResult
+export type VADAudioPostMessage = PipelineProcessResult
 
-export type AudioVADGetMessage = {
+export type VADAudioGetMessage = {
   type: 'flush'
 }
 
-class AudioVADProcessor extends AudioWorkletProcessor {
+export class VADAudioProcessor extends AudioWorkletProcessor {
   private pipeline: VADPipeline
 
   constructor(options?: AudioWorkletNodeOptions) {
     super(options)
 
     const processorOptions =
-      options?.processorOptions as AudioVADProcessorOptions
+      options?.processorOptions as VADAudioProcessorOptions
 
     this.pipeline = new VADPipeline(processorOptions)
 
@@ -38,7 +38,7 @@ class AudioVADProcessor extends AudioWorkletProcessor {
   /**
    * Post a message to the main thread.
    */
-  post(message: AudioVADPostMessage) {
+  post(message: VADAudioPostMessage) {
     if (message.type === 'audioData' && message.audioBuffer) {
       const transferable = [message.audioBuffer.buffer]
       this.port.postMessage(message, transferable)
@@ -50,10 +50,10 @@ class AudioVADProcessor extends AudioWorkletProcessor {
   /**
    * Add a message listener.
    */
-  on(callback: (message: AudioVADGetMessage) => void) {
+  on(callback: (message: VADAudioGetMessage) => void) {
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     this.port.onmessage = (event) => {
-      callback(event.data as AudioVADGetMessage)
+      callback(event.data as VADAudioGetMessage)
     }
   }
 
@@ -74,5 +74,3 @@ class AudioVADProcessor extends AudioWorkletProcessor {
     return true
   }
 }
-
-registerProcessor('AudioVADProcessor', AudioVADProcessor)
