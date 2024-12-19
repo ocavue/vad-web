@@ -51,7 +51,17 @@ export interface RecordingOptions {
   audioWorkletURL: string | URL
 }
 
-async function start(options: RecordingOptions): Promise<DisposeFunction> {
+const disposeFunctions: DisposeFunction[] = []
+
+async function disposeAll() {
+  while (disposeFunctions.length > 0) {
+    await disposeFunctions.shift()?.()
+  }
+}
+
+async function start(options: RecordingOptions): Promise<void> {
+  await disposeAll()
+
   const {
     onAudioData,
     onSilence,
@@ -88,6 +98,7 @@ async function start(options: RecordingOptions): Promise<DisposeFunction> {
     await audioContext?.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
   }
+  disposeFunctions.push(dispose)
 
   try {
     // Get microphone access
@@ -136,8 +147,6 @@ async function start(options: RecordingOptions): Promise<DisposeFunction> {
     void dispose()
     throw new Error(`Failed to initialize recording: ${err}`, { cause: err })
   }
-
-  return dispose
 }
 
 const limit = pLimit(1)
@@ -150,6 +159,6 @@ const limit = pLimit(1)
 export async function startRecording(
   options: RecordingOptions,
 ): Promise<DisposeFunction> {
-  const dispose = await limit(() => start(options))
-  return () => limit(dispose)
+  await limit(() => start(options))
+  return () => limit(disposeAll)
 }
