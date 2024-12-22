@@ -42,6 +42,9 @@ export interface VADAudioEvent {
 
 export type VADEvent = VADSpeechEvent | VADSilenceEvent | VADAudioEvent
 
+/**
+ * A class that processes audio data and emits events based on the VAD results.
+ */
 export class VADProcessor {
   private vad = new SileroVAD()
   private buffer = new AudioDataBuffer(MAX_AUDIO_DURATION_SAMPLES)

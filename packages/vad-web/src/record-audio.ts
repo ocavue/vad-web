@@ -78,10 +78,15 @@ export interface RecordAudioOptions {
   onAudioData: (audioData: Float32Array) => void
 }
 
-export async function recordAudio(
-  options: RecordAudioOptions,
-): Promise<DisposeFunction> {
-  const { onAudioData } = options
+/**
+ * Records audio from the microphone and calls the `onAudioData` callback with the audio data.
+ *
+ * @param options - The options for recording audio.
+ * @returns A function to dispose of the audio recorder.
+ */
+export async function recordAudio({
+  onAudioData,
+}: RecordAudioOptions): Promise<DisposeFunction> {
   await limit(() => start(onAudioData))
   return () => limit(disposeAll)
 }

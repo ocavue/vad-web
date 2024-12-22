@@ -79,6 +79,12 @@ export interface ReadAudioOptions {
   realTime?: boolean
 }
 
+/**
+ * Reads audio data from an ArrayBuffer and calls the `onAudioData` callback with the audio data.
+ *
+ * @param options - The options for reading audio data.
+ * @returns A function to dispose of the audio reader.
+ */
 export async function readAudio(
   options: ReadAudioOptions,
 ): Promise<VoidFunction> {

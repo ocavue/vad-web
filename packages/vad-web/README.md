@@ -22,8 +22,6 @@ npm install vad-web
 
 Here is a simple example of how to use the library to record audio and process it with the VAD processor.
 
-`recordAudio` is responsible for recording audio, and `VADProcessor` is actually doing the VAD processing.
-
 ```ts
 import { recordAudio, VADProcessor } from 'vad-web'
 
