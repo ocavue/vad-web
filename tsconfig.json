@@ -19,9 +19,6 @@
   "include": ["./*.ts", "./*.js"],
   "references": [
     {
-      "path": "./examples/with-next/tsconfig.json"
-    },
-    {
       "path": "./examples/with-vite/tsconfig.json"
     },
     {
