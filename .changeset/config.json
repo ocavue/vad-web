@@ -5,5 +5,7 @@
   "linked": [],
   "access": "public",
   "baseBranch": "master",
-  "ignore": ["with-vite", "with-next"]
+  "ignore": [
+    "with-vite"
+  ]
 }
