@@ -207,7 +207,7 @@ A class that processes audio data and emits events based on the VAD results.
 <dd>
 
 ```
-new VADProcessor(): VADProcessor
+new VADProcessor(options?: VADProcessorOptions): VADProcessor
 ```
 
 </dd>
@@ -351,6 +351,26 @@ The audio data
 <dd>
 
 The sample rate of the audio data
+
+</dd>
+
+</dl>
+
+### VADProcessorOptions <a id="vad-processor-options" href="#vad-processor-options">#</a>
+
+<dl>
+
+<dt>
+
+`maxAudioDurationSeconds?: number`
+
+</dt>
+
+<dd>
+
+The maximum duration of a speech audio chunk in seconds.
+
+**Default**: `30`
 
 </dd>
 

@@ -118,6 +118,7 @@ export {
   type VADSpeechEvent,
   type VADSilenceEvent,
   type VADAudioEvent,
+  type VADProcessorOptions,
 } from './processor'
 
 export type { DisposeFunction } from './types'

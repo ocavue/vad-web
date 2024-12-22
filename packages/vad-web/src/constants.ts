@@ -27,13 +27,6 @@ export const EXIT_THRESHOLD = 0.1
 export const AUDIO_FRAME_SIZE = 512
 
 /**
- * Maximum duration of audio that can be handled by Moonshine
- */
-export const MAX_AUDIO_DURATION_SECONDS = 30
-export const MAX_AUDIO_DURATION_SAMPLES =
-  MAX_AUDIO_DURATION_SECONDS * SAMPLE_RATE
-
-/**
  * Pad the speech chunk with this amount each side
  */
 export const SPEECH_PAD_SECONDS = 0.08

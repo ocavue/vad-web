@@ -1,6 +1,5 @@
 import {
   AUDIO_FRAME_SIZE,
-  MAX_AUDIO_DURATION_SAMPLES,
   MIN_SILENCE_SAMPLES,
   MIN_SPEECH_SAMPLES,
   SAMPLE_RATE,
@@ -42,16 +41,34 @@ export interface VADAudioEvent {
 
 export type VADEvent = VADSpeechEvent | VADSilenceEvent | VADAudioEvent
 
+export interface VADProcessorOptions {
+  /**
+   * The maximum duration of a speech audio chunk in seconds.
+   *
+   * @default 30
+   */
+  maxAudioDurationSeconds?: number
+}
+
 /**
  * A class that processes audio data and emits events based on the VAD results.
  */
 export class VADProcessor {
   private vad = new SileroVAD()
-  private buffer = new AudioDataBuffer(MAX_AUDIO_DURATION_SAMPLES)
+  private buffer: AudioDataBuffer
   private wasSpeech = false
   private speechSamples = 0
   private postSpeechSamples = 0
   private frameQueue = new AudioFrameQueue(AUDIO_FRAME_SIZE)
+  private maxAudioDurationSamples: number
+
+  constructor(options?: VADProcessorOptions) {
+    const maxAudioDurationSeconds = options?.maxAudioDurationSeconds ?? 30
+    const maxAudioDurationSamples = maxAudioDurationSeconds * SAMPLE_RATE
+
+    this.buffer = new AudioDataBuffer(maxAudioDurationSamples)
+    this.maxAudioDurationSamples = maxAudioDurationSamples
+  }
 
   /**
    * Processes the audio data.
@@ -90,7 +107,7 @@ export class VADProcessor {
 
     if (
       SPEECH_PAD_SAMPLES + this.speechSamples + audioFrame.length >
-      MAX_AUDIO_DURATION_SAMPLES
+      this.maxAudioDurationSamples
     ) {
       this.handleAudioData()
     }
