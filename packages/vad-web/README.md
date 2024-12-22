@@ -132,6 +132,10 @@ If true, simulates real-time processing by adding delays to match the audio dura
 
 </dl>
 
+### VADEvent <a id="vad-event" href="#vad-event">#</a>
+
+**Type**: `VADSpeechEvent | VADSilenceEvent | VADAudioEvent`
+
 ### VADAudioEvent <a id="vad-audio-event" href="#vad-audio-event">#</a>
 
 A event fired when speech audio data is available.
@@ -197,10 +201,6 @@ The sample rate of the audio data
 </dd>
 
 </dl>
-
-### VADEvent <a id="vad-event" href="#vad-event">#</a>
-
-**Type**: `VADSpeechEvent | VADSilenceEvent | VADAudioEvent`
 
 ### VADSilenceEvent <a id="vad-silence-event" href="#vad-silence-event">#</a>
 

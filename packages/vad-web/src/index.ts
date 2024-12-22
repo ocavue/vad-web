@@ -50,11 +50,8 @@ export { recordAudio, type RecordAudioOptions } from './record-audio'
 
 export { readAudio, type ReadAudioOptions } from './read-audio'
 
-export type {
-  VADAudioEvent,
-  VADEvent,
-  VADSilenceEvent,
-  VADSpeechEvent,
-} from './types'
+export type { VADEvent } from './types'
+
+export type { VADAudioEvent, VADSilenceEvent, VADSpeechEvent } from './types'
 
 export type { DisposeFunction } from './types'
