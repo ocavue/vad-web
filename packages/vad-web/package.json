@@ -22,9 +22,17 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts"
     },
-    "./vad-audio-worklet": {
-      "types": "./src/vad-audio-worklet.ts",
-      "import": "./dist/vad-audio-worklet.js"
+    "./processor": {
+      "types": "./src/processor.ts",
+      "import": "./src/processor.ts"
+    },
+    "./read-audio": {
+      "types": "./src/read-audio.ts",
+      "import": "./src/read-audio.ts"
+    },
+    "./record-audio": {
+      "types": "./src/record-audio.ts",
+      "import": "./src/record-audio.ts"
     }
   },
   "typesVersions": {
@@ -40,18 +48,23 @@
   ],
   "scripts": {
     "docs": "typedoc --tsconfig ./tsconfig.build.json --sort documents-first --plugin typedoc-plugin-md --out temp src/index.ts && mv temp/README.md ./README.md",
-    "build": "tsup && pnpm run docs"
+    "build": "tsup && pnpm run docs",
+    "test": "vitest"
   },
   "dependencies": {
-    "p-limit": "^6.1.0"
+    "@huggingface/transformers": "^3.2.1",
+    "denque": "^2.1.0",
+    "just-memoize": "^2.2.0",
+    "p-limit": "^6.1.0",
+    "recorder-audio-worklet": "^6.0.39"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.48.0",
-    "fft.js": "^4.0.4",
     "tsup": "^8.3.5",
     "typedoc": "^0.27.5",
     "typedoc-plugin-md": "^0.5.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "publishConfig": {
     "main": "./dist/index.js",
@@ -62,9 +75,17 @@
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js"
       },
-      "./vad-audio-worklet": {
-        "types": "./dist/vad-audio-worklet.d.ts",
-        "import": "./dist/vad-audio-worklet.js"
+      "./processor": {
+        "types": "./dist/processor.d.ts",
+        "import": "./dist/processor.js"
+      },
+      "./read-audio": {
+        "types": "./dist/read-audio.d.ts",
+        "import": "./dist/read-audio.js"
+      },
+      "./record-audio": {
+        "types": "./dist/record-audio.d.ts",
+        "import": "./dist/record-audio.js"
       }
     },
     "typesVersions": {

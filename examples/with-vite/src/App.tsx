@@ -1,4 +1,3 @@
-import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
 
 import Recorder from './recorder'
 
@@ -11,7 +10,7 @@ function App() {
           source code
         </a>
       </p>
-      <Recorder audioWorkletURL={audioWorkletURL} />
+      <Recorder   />
     </div>
   )
 }

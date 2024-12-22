@@ -1,17 +1,15 @@
 /**
  * [![NPM version](https://img.shields.io/npm/v/vad-web?color=a1b858)](https://www.npmjs.com/package/vad-web)
  *
- * A lightweight, browser-based Voice Activity Detection (VAD) library that
- * detects speech in real-time audio streams.
+ * A enterprise-grade Voice Activity Detection (VAD) library for the browser.
+ *
+ * It is based on the [Silero VAD](https://github.com/snakers4/silero-vad) model and [Transformers.js](https://github.com/huggingface/transformers.js).
  *
  * ## Online demo
  *
  * https://vad-web.vercel.app
  *
- * ## Examples
- *
- * - [With Vite.js](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
- * - [With Next.js](https://github.com/ocavue/vad-web/tree/master/examples/with-next)
+ * [source code](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
  *
  * ## Installation
  *
@@ -19,31 +17,107 @@
  * npm install vad-web
  * ```
  *
- * ## Credits
+ * ## Usage
  *
- * - This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library,
- *   which is licensed under the [MIT License](https://github.com/indutny/fft.js?tab=readme-ov-file#license).
+ * Here is a simple example of how to use the library to record audio and process it with the VAD processor.
  *
- * - The VAD algorithm is based on the paper:
+ * `recordAudio` is responsible for recording audio, and `VADProcessor` is actually doing the VAD processing.
  *
- *   Moattar, Mohammad & Homayoonpoor, Mahdi. (2010). A simple but efficient
- *   real-time voice activity detection algorithm. European Signal Processing
- *   Conference.
+ * ```ts
+ * import { recordAudio, VADProcessor } from 'vad-web'
+ * 
+ * export async function startRecording() {
+ *   const processor = new VADProcessor()
+ * 
+ *   const dispose = await recordAudio({
+ *     onAudioData: async (audioData) => {
+ *       const events = await processor.process(audioData)
+ *       events.forEach((event) => {
+ *         if (event.type === 'speech') {
+ *           console.log('Speech detected')
+ *         } else if (event.type === 'silence') {
+ *           console.log('Silence detected')
+ *         } else if (event.type === 'audio') {
+ *           console.log('Speech audio data available')
+ *           // Further processing can be done here
+ *         }
+ *       })
+ *     },
+ *   })
+ * 
+ *   // Return a dispose callback function
+ *   return async () => {
+ *     processor.stop()
+ *     await dispose()
+ *   }
+ * }
+ * ```
  *
- *   <https://www.researchgate.net/publication/255667085_A_simple_but_efficient_real-time_voice_activity_detection_algorithm>
+ * ### Using in web worker
  *
- * - The VAD algorithm implementation is based on the [`vad-audio-worklet`](https://github.com/thurti/vad-audio-worklet) library,
- *   which is licensed under the [MIT License](https://github.com/thurti/vad-audio-worklet/blob/main/LICENSE).
+ * Since the VAD processing is a heavy task, it is recommended to use it in a web worker.
+ *
+ * Here is an example of using the library in a web worker with [Comlink](https://github.com/GoogleChromeLabs/comlink).
+ *
+ * ```ts
+ * // main.ts
+ * import { wrap } from 'comlink'
+ * import type { VADProcessor } from 'vad-web/processor'
+ * import { recordAudio } from 'vad-web/record-audio'
+ * 
+ * const worker = new Worker(new URL('./worker.ts', import.meta.url), {
+ *   type: 'module',
+ * })
+ * const processor = wrap<VADProcessor>(worker)
+ * 
+ * export async function startRecording() {
+ *   const dispose = await recordAudio({
+ *     onAudioData: async (audioData) => {
+ *       const events = await processor.process(audioData)
+ *       events.forEach((event) => {
+ *         if (event.type === 'speech') {
+ *           console.log('Speech detected')
+ *         } else if (event.type === 'silence') {
+ *           console.log('Silence detected')
+ *         } else if (event.type === 'audio') {
+ *           console.log('Speech audio data available')
+ *           // Further processing can be done here
+ *         }
+ *       })
+ *     },
+ *   })
+ * 
+ *   // Return a dispose callback function
+ *   return async () => {
+ *     await processor.stop()
+ *     await dispose()
+ *   }
+ * }
+ * ```
+ * 
+ * ```ts
+ * // worker.ts
+ * import { expose } from 'comlink'
+ * import { VADProcessor } from 'vad-web/processor'
+ *
+ * const processor = new VADProcessor()
+ *
+ * expose(processor)
+ * ```
  *
  * @module
  */
 
-export { startRecording } from './recording'
+export { recordAudio, type RecordAudioOptions } from './record-audio'
 
-export { startRecognition } from './recognition'
+export { readAudio, type ReadAudioOptions } from './read-audio'
 
-export type { RecordingOptions } from './recording'
-
-export type { RecognitionOptions } from './recognition'
+export {
+  VADProcessor,
+  type VADEvent,
+  type VADSpeechEvent as VADSpeechStartEvent,
+  type VADSilenceEvent as VADSpeechEndEvent,
+  type VADAudioEvent,
+} from './processor'
 
 export type { DisposeFunction } from './types'
