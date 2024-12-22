@@ -25,10 +25,10 @@
  *
  * ```ts
  * import { recordAudio, VADProcessor } from 'vad-web'
- * 
+ *
  * export async function startRecording() {
  *   const processor = new VADProcessor()
- * 
+ *
  *   const dispose = await recordAudio({
  *     onAudioData: async (audioData) => {
  *       const events = await processor.process(audioData)
@@ -44,7 +44,7 @@
  *       })
  *     },
  *   })
- * 
+ *
  *   // Return a dispose callback function
  *   return async () => {
  *     processor.stop()
@@ -64,12 +64,12 @@
  * import { wrap } from 'comlink'
  * import type { VADProcessor } from 'vad-web/processor'
  * import { recordAudio } from 'vad-web/record-audio'
- * 
+ *
  * const worker = new Worker(new URL('./worker.ts', import.meta.url), {
  *   type: 'module',
  * })
  * const processor = wrap<VADProcessor>(worker)
- * 
+ *
  * export async function startRecording() {
  *   const dispose = await recordAudio({
  *     onAudioData: async (audioData) => {
@@ -86,7 +86,7 @@
  *       })
  *     },
  *   })
- * 
+ *
  *   // Return a dispose callback function
  *   return async () => {
  *     await processor.stop()
@@ -94,7 +94,7 @@
  *   }
  * }
  * ```
- * 
+ *
  * ```ts
  * // worker.ts
  * import { expose } from 'comlink'

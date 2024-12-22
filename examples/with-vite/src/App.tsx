@@ -1,4 +1,3 @@
-
 import Recorder from './recorder'
 
 function App() {
@@ -10,7 +9,7 @@ function App() {
           source code
         </a>
       </p>
-      <Recorder   />
+      <Recorder />
     </div>
   )
 }

@@ -94,7 +94,6 @@ export class VADProcessor {
 
     this.buffer.write(audioFrame)
 
-
     if (isSpeech) {
       const events: VADEvent[] = []
       if (!this.wasSpeech) {

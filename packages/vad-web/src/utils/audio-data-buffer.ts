@@ -68,10 +68,8 @@ export class AudioDataBuffer {
 
     const result = new Float32Array(readLen)
 
-
     const readIndex =
       (this.writeIndex - this.size + start + this.capacity) % this.capacity
-
 
     if (readIndex + readLen <= this.capacity) {
       // Data is contiguous
@@ -94,7 +92,6 @@ export class AudioDataBuffer {
     this.size = 0
     this.writeIndex = 0
   }
-
 
   get length(): number {
     return this.size
