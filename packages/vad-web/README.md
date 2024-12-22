@@ -139,7 +139,7 @@ A function to dispose of the audio recorder.
 ### readAudio <a id="read-audio" href="#read-audio">#</a>
 
 ```ts
-function readAudio(options: ReadAudioOptions): Promise<VoidFunction>
+function readAudio(options: ReadAudioOptions): Promise<DisposeFunction>
 ```
 
 Reads audio data from an ArrayBuffer and calls the `onAudioData` callback with the audio data.
@@ -252,9 +252,9 @@ const stop: () => void
 
 ### VADEvent <a id="vad-event" href="#vad-event">#</a>
 
-**Type**: `VADSpeechStartEvent | VADSpeechEndEvent | VADAudioEvent`
+**Type**: `VADSpeechEvent | VADSilenceEvent | VADAudioEvent`
 
-### VADSpeechStartEvent <a id="vad-speech-start-event" href="#vad-speech-start-event">#</a>
+### VADSpeechEvent <a id="vad-speech-event" href="#vad-speech-event">#</a>
 
 A event fired when a speech starts.
 
@@ -272,7 +272,7 @@ A event fired when a speech starts.
 
 </dl>
 
-### VADSpeechEndEvent <a id="vad-speech-end-event" href="#vad-speech-end-event">#</a>
+### VADSilenceEvent <a id="vad-silence-event" href="#vad-silence-event">#</a>
 
 A event fired when a speech ends.
 

@@ -87,6 +87,6 @@ export interface ReadAudioOptions {
  */
 export async function readAudio(
   options: ReadAudioOptions,
-): Promise<VoidFunction> {
+): Promise<DisposeFunction> {
   return start(options)
 }

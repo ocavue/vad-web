@@ -115,8 +115,8 @@ export { readAudio, type ReadAudioOptions } from './read-audio'
 export {
   VADProcessor,
   type VADEvent,
-  type VADSpeechEvent as VADSpeechStartEvent,
-  type VADSilenceEvent as VADSpeechEndEvent,
+  type VADSpeechEvent,
+  type VADSilenceEvent,
   type VADAudioEvent,
 } from './processor'
 
