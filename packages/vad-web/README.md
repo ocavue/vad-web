@@ -22,6 +22,8 @@ npm install vad-web
 
 Here is a simple example of how to use the library to record audio and process it with the VAD processor.
 
+`recordAudio` is responsible for recording audio, and `VADProcessor` is actually doing the VAD processing.
+
 ```ts
 import { recordAudio, VADProcessor } from 'vad-web'
 
@@ -112,6 +114,12 @@ expose(processor)
 function recordAudio(options: RecordAudioOptions): Promise<DisposeFunction>
 ```
 
+Records audio from the microphone and calls the `onAudioData` callback with the audio data.
+
+**Returns**
+
+A function to dispose of the audio recorder.
+
 ### RecordAudioOptions <a id="record-audio-options" href="#record-audio-options">#</a>
 
 <dl>
@@ -133,6 +141,12 @@ function recordAudio(options: RecordAudioOptions): Promise<DisposeFunction>
 ```ts
 function readAudio(options: ReadAudioOptions): Promise<VoidFunction>
 ```
+
+Reads audio data from an ArrayBuffer and calls the `onAudioData` callback with the audio data.
+
+**Returns**
+
+A function to dispose of the audio reader.
 
 ### ReadAudioOptions <a id="read-audio-options" href="#read-audio-options">#</a>
 
@@ -179,6 +193,8 @@ If true, simulates real-time processing by adding delays to match the audio dura
 </dl>
 
 ### VADProcessor <a id="vad-processor" href="#vad-processor">#</a>
+
+A class that processes audio data and emits events based on the VAD results.
 
 <dl>
 
