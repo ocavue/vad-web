@@ -1,7 +1,7 @@
 /**
  * [![NPM version](https://img.shields.io/npm/v/vad-web?color=a1b858)](https://www.npmjs.com/package/vad-web)
  *
- * A enterprise-grade Voice Activity Detection (VAD) library for the browser.
+ * An enterprise-grade Voice Activity Detection (VAD) library for the browser.
  *
  * It is based on the [Silero VAD](https://github.com/snakers4/silero-vad) model and [Transformers.js](https://github.com/huggingface/transformers.js).
  *
