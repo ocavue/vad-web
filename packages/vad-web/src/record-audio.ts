@@ -5,7 +5,8 @@ import {
 } from 'recorder-audio-worklet'
 
 import { SAMPLE_RATE } from './constants'
-import type { DisposeFunction } from './types'
+import { processor } from './processor-main'
+import type { DisposeFunction, VADEvent } from './types'
 
 const ERROR_MESSAGE =
   'Missing AudioWorklet support. Maybe this is not running in a secure context.'
@@ -21,9 +22,7 @@ async function disposeAll() {
   }
 }
 
-async function start(
-  onAudioData: (audioData: Float32Array) => void,
-): Promise<void> {
+async function start(handler: (event: VADEvent) => void): Promise<void> {
   await disposeAll()
 
   if (typeof AudioWorkletNode === 'undefined') {
@@ -52,12 +51,15 @@ async function start(
   const { port1, port2 } = channel
 
   // eslint-disable-next-line unicorn/prefer-add-event-listener
-  port2.onmessage = (event) => {
+  port2.onmessage = async (event) => {
     const data = event.data as Float32Array[]
     const audioData: Float32Array = data?.[0]
 
     if (audioData instanceof Float32Array) {
-      onAudioData(audioData)
+      const events = await processor.process(audioData)
+      for (const event of events) {
+        handler(event)
+      }
     }
   }
 
@@ -71,11 +73,18 @@ async function start(
     port2.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
     await audioContext.close()
+    const events = await processor.stop()
+    for (const event of events) {
+      handler(event)
+    }
   })
 }
 
 export interface RecordAudioOptions {
-  onAudioData: (audioData: Float32Array) => void
+  /**
+   * A function that will be called with the VAD event.
+   */
+  handler: (event: VADEvent) => void
 }
 
 /**
@@ -85,8 +94,8 @@ export interface RecordAudioOptions {
  * @returns A function to dispose of the audio recorder.
  */
 export async function recordAudio({
-  onAudioData,
+  handler,
 }: RecordAudioOptions): Promise<DisposeFunction> {
-  await limit(() => start(onAudioData))
+  await limit(() => start(handler))
   return () => limit(disposeAll)
 }

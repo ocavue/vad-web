@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
+import { recordAudio } from 'vad-web'
 import { encodeWavFileFromArrays } from 'wav-file-encoder'
-
-import { startRecording } from './record-main'
 
 interface AudioChunk {
   url: string
@@ -22,20 +21,29 @@ export default function Recorder() {
   const start = async () => {
     setIsRecording(true)
 
-    disposeRef.current = await startRecording((event) => {
-      if (event.type === 'audio') {
-        const { audioData, sampleRate, startTime, endTime } = event
-        const audioBuffer = encodeWavFileFromArrays([audioData], sampleRate, 1)
-        const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
-        const url = URL.createObjectURL(audioBlob)
-        addAudioChunk({ url, startTime, endTime })
-      } else if (event.type === 'speech') {
-        console.log('Speech start detected')
-        setIsSpeaking(true)
-      } else if (event.type === 'silence') {
-        console.log('Speech end detected')
-        setIsSpeaking(false)
-      }
+    disposeRef.current = await recordAudio({
+      handler: (event) => {
+        if (event.type === 'audio') {
+          console.log(
+            `Audio received with duration ${event.endTime - event.startTime}ms`,
+          )
+          const { audioData, sampleRate, startTime, endTime } = event
+          const audioBuffer = encodeWavFileFromArrays(
+            [audioData],
+            sampleRate,
+            1,
+          )
+          const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
+          const url = URL.createObjectURL(audioBlob)
+          addAudioChunk({ url, startTime, endTime })
+        } else if (event.type === 'speech') {
+          console.log('Speech start detected')
+          setIsSpeaking(true)
+        } else if (event.type === 'silence') {
+          console.log('Speech end detected')
+          setIsSpeaking(false)
+        }
+      },
     })
   }
 

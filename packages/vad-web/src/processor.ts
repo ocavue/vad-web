@@ -1,5 +1,6 @@
 import {
   AUDIO_FRAME_SIZE,
+  MAX_AUDIO_DURATION_SAMPLES,
   MIN_SILENCE_SAMPLES,
   MIN_SPEECH_SAMPLES,
   SAMPLE_RATE,
@@ -7,68 +8,20 @@ import {
   SPEECH_PAD_SAMPLES,
 } from './constants'
 import { SileroVAD } from './silero-vad'
+import type { VADEvent } from './types'
 import { AudioDataBuffer } from './utils/audio-data-buffer'
 import { AudioFrameQueue } from './utils/audio-frame-queue'
-
-/**
- * A event fired when a speech starts.
- */
-export interface VADSpeechEvent {
-  type: 'speech'
-}
-
-/**
- * A event fired when a speech ends.
- */
-export interface VADSilenceEvent {
-  type: 'silence'
-}
-
-/**
- * A event fired when speech audio data is available.
- */
-export interface VADAudioEvent {
-  type: 'audio'
-  /** A timestamp in milliseconds */
-  startTime: number
-  /** A timestamp in milliseconds */
-  endTime: number
-  /** The audio data */
-  audioData: Float32Array
-  /** The sample rate of the audio data */
-  sampleRate: number
-}
-
-export type VADEvent = VADSpeechEvent | VADSilenceEvent | VADAudioEvent
-
-export interface VADProcessorOptions {
-  /**
-   * The maximum duration of a speech audio chunk in seconds.
-   *
-   * @default 30
-   */
-  maxAudioDurationSeconds?: number
-}
 
 /**
  * A class that processes audio data and emits events based on the VAD results.
  */
 export class VADProcessor {
   private vad = new SileroVAD()
-  private buffer: AudioDataBuffer
+  private buffer = new AudioDataBuffer(MAX_AUDIO_DURATION_SAMPLES)
   private wasSpeech = false
   private speechSamples = 0
   private postSpeechSamples = 0
   private frameQueue = new AudioFrameQueue(AUDIO_FRAME_SIZE)
-  private maxAudioDurationSamples: number
-
-  constructor(options?: VADProcessorOptions) {
-    const maxAudioDurationSeconds = options?.maxAudioDurationSeconds ?? 30
-    const maxAudioDurationSamples = maxAudioDurationSeconds * SAMPLE_RATE
-
-    this.buffer = new AudioDataBuffer(maxAudioDurationSamples)
-    this.maxAudioDurationSamples = maxAudioDurationSamples
-  }
 
   /**
    * Processes the audio data.
@@ -92,8 +45,8 @@ export class VADProcessor {
   /**
    * Stops the VAD processor and handles the last unfinished speech if any.
    */
-  stop() {
-    this.handleAudioData()
+  stop(): VADEvent[] {
+    return this.handleAudioData()
   }
 
   private async processFrame(audioFrame: Float32Array): Promise<VADEvent[]> {
@@ -107,7 +60,7 @@ export class VADProcessor {
 
     if (
       SPEECH_PAD_SAMPLES + this.speechSamples + audioFrame.length >
-      this.maxAudioDurationSamples
+      MAX_AUDIO_DURATION_SAMPLES
     ) {
       this.handleAudioData()
     }

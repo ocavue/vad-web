@@ -21,18 +21,6 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
-    },
-    "./processor": {
-      "types": "./src/processor.ts",
-      "import": "./src/processor.ts"
-    },
-    "./read-audio": {
-      "types": "./src/read-audio.ts",
-      "import": "./src/read-audio.ts"
-    },
-    "./record-audio": {
-      "types": "./src/record-audio.ts",
-      "import": "./src/record-audio.ts"
     }
   },
   "typesVersions": {
@@ -53,6 +41,7 @@
   },
   "dependencies": {
     "@huggingface/transformers": "^3.2.1",
+    "comlink": "^4.4.2",
     "denque": "^2.1.0",
     "just-memoize": "^2.2.0",
     "p-limit": "^6.1.0",
@@ -74,18 +63,6 @@
       ".": {
         "types": "./dist/index.d.ts",
         "import": "./dist/index.js"
-      },
-      "./processor": {
-        "types": "./dist/processor.d.ts",
-        "import": "./dist/processor.js"
-      },
-      "./read-audio": {
-        "types": "./dist/read-audio.d.ts",
-        "import": "./dist/read-audio.js"
-      },
-      "./record-audio": {
-        "types": "./dist/record-audio.d.ts",
-        "import": "./dist/record-audio.js"
       }
     },
     "typesVersions": {

@@ -4,13 +4,15 @@
 
 An enterprise-grade Voice Activity Detection (VAD) library for the browser.
 
-It is based on the [Silero VAD](https://github.com/snakers4/silero-vad) model and [Transformers.js](https://github.com/huggingface/transformers.js).
+It is based on the [Silero VAD](https://github.com/snakers4/silero-vad) model
+and [Transformers.js](https://github.com/huggingface/transformers.js).
 
 ## Online demo
 
 https://vad-web.vercel.app
 
-[source code](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
+[source
+code](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
 
 ## Installation
 
@@ -20,90 +22,26 @@ npm install vad-web
 
 ## Usage
 
-Here is a simple example of how to use the library to record audio and process it with the VAD processor.
-
-`recordAudio` is responsible for recording audio, and `VADProcessor` is actually doing the VAD processing.
-
-```ts
-import { recordAudio, VADProcessor } from 'vad-web'
-
-export async function startRecording() {
-  const processor = new VADProcessor()
-
-  const dispose = await recordAudio({
-    onAudioData: async (audioData) => {
-      const events = await processor.process(audioData)
-      events.forEach((event) => {
-        if (event.type === 'speech') {
-          console.log('Speech detected')
-        } else if (event.type === 'silence') {
-          console.log('Silence detected')
-        } else if (event.type === 'audio') {
-          console.log('Speech audio data available')
-          // Further processing can be done here
-        }
-      })
-    },
-  })
-
-  // Return a dispose callback function
-  return async () => {
-    processor.stop()
-    await dispose()
-  }
-}
-```
-
-### Using in web worker
-
-Since the VAD processing is a heavy task, it is recommended to use it in a web worker.
-
-Here is an example of using the library in a web worker with [Comlink](https://github.com/GoogleChromeLabs/comlink).
+Call `recordAudio` to start recording audio and get a dispose function. Under
+the hood, it will run the [Silero
+VAD](https://github.com/snakers4/silero-vad) model in a web worker to avoid
+blocking the main thread.
 
 ```ts
-// main.ts
-import { wrap } from 'comlink'
-import type { VADProcessor } from 'vad-web/processor'
-import { recordAudio } from 'vad-web/record-audio'
+import { recordAudio, type VADEvent } from 'vad-web'
 
-const worker = new Worker(new URL('./worker.ts', import.meta.url), {
-  type: 'module',
+const dispose = await recordAudio({
+  handler: async (event: VADEvent) => {
+    if (event.type === 'speech') {
+      console.log('Speech detected')
+    } else if (event.type === 'silence') {
+      console.log('Silence detected')
+    } else if (event.type === 'audio') {
+      console.log('Speech audio data available')
+      // Further processing can be done here
+    }
+  },
 })
-const processor = wrap<VADProcessor>(worker)
-
-export async function startRecording() {
-  const dispose = await recordAudio({
-    onAudioData: async (audioData) => {
-      const events = await processor.process(audioData)
-      events.forEach((event) => {
-        if (event.type === 'speech') {
-          console.log('Speech detected')
-        } else if (event.type === 'silence') {
-          console.log('Silence detected')
-        } else if (event.type === 'audio') {
-          console.log('Speech audio data available')
-          // Further processing can be done here
-        }
-      })
-    },
-  })
-
-  // Return a dispose callback function
-  return async () => {
-    await processor.stop()
-    await dispose()
-  }
-}
-```
-
-```ts
-// worker.ts
-import { expose } from 'comlink'
-import { VADProcessor } from 'vad-web/processor'
-
-const processor = new VADProcessor()
-
-expose(processor)
 ```
 
 ## API Reference
@@ -126,11 +64,13 @@ A function to dispose of the audio recorder.
 
 <dt>
 
-`onAudioData: (audioData: Float32Array<ArrayBufferLike>) => void`
+`handler: (event: VADEvent) => void`
 
 </dt>
 
 <dd>
+
+A function that will be called with the VAD event.
 
 </dd>
 
@@ -154,13 +94,13 @@ A function to dispose of the audio reader.
 
 <dt>
 
-`onAudioData: (audioData: Float32Array<ArrayBufferLike>) => void`
+`handler: (event: VADEvent) => void`
 
 </dt>
 
 <dd>
 
-A function that will be called when audio data is received.
+A function that will be called with the VAD event.
 
 </dd>
 
@@ -187,104 +127,6 @@ Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttp
 If true, simulates real-time processing by adding delays to match the audio duration.
 
 **Default**: `false`
-
-</dd>
-
-</dl>
-
-### VADProcessor <a id="vad-processor" href="#vad-processor">#</a>
-
-A class that processes audio data and emits events based on the VAD results.
-
-<dl>
-
-<dt>
-
-`constructor`
-
-</dt>
-
-<dd>
-
-```
-new VADProcessor(options?: VADProcessorOptions): VADProcessor
-```
-
-</dd>
-
-<dt>
-
-`process`
-
-</dt>
-
-<dd>
-
-Processes the audio data.
-
-**Returns**
-
-A list of events that occurred during the processing.
-
-```ts
-const process: (audioData: Float32Array<ArrayBufferLike>) => Promise<VADEvent[]>
-```
-
-</dd>
-
-<dt>
-
-`stop`
-
-</dt>
-
-<dd>
-
-Stops the VAD processor and handles the last unfinished speech if any.
-
-```ts
-const stop: () => void
-```
-
-</dd>
-
-</dl>
-
-### VADEvent <a id="vad-event" href="#vad-event">#</a>
-
-**Type**: `VADSpeechEvent | VADSilenceEvent | VADAudioEvent`
-
-### VADSpeechEvent <a id="vad-speech-event" href="#vad-speech-event">#</a>
-
-A event fired when a speech starts.
-
-<dl>
-
-<dt>
-
-`type: "speech"`
-
-</dt>
-
-<dd>
-
-</dd>
-
-</dl>
-
-### VADSilenceEvent <a id="vad-silence-event" href="#vad-silence-event">#</a>
-
-A event fired when a speech ends.
-
-<dl>
-
-<dt>
-
-`type: "silence"`
-
-</dt>
-
-<dd>
 
 </dd>
 
@@ -356,21 +198,41 @@ The sample rate of the audio data
 
 </dl>
 
-### VADProcessorOptions <a id="vad-processor-options" href="#vad-processor-options">#</a>
+### VADEvent <a id="vad-event" href="#vad-event">#</a>
+
+**Type**: `VADSpeechEvent | VADSilenceEvent | VADAudioEvent`
+
+### VADSilenceEvent <a id="vad-silence-event" href="#vad-silence-event">#</a>
+
+A event fired when a speech ends.
 
 <dl>
 
 <dt>
 
-`maxAudioDurationSeconds?: number`
+`type: "silence"`
 
 </dt>
 
 <dd>
 
-The maximum duration of a speech audio chunk in seconds.
+</dd>
 
-**Default**: `30`
+</dl>
+
+### VADSpeechEvent <a id="vad-speech-event" href="#vad-speech-event">#</a>
+
+A event fired when a speech starts.
+
+<dl>
+
+<dt>
+
+`type: "speech"`
+
+</dt>
+
+<dd>
 
 </dd>
 

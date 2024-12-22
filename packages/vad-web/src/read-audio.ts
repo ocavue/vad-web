@@ -1,10 +1,11 @@
 import { SAMPLE_RATE } from './constants'
-import type { DisposeFunction } from './types'
+import { processor } from './processor-main'
+import type { DisposeFunction, VADEvent } from './types'
 import { sleep } from './utils/sleep'
 import { waitForIdle } from './utils/wait-for-idle'
 
 async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
-  const { onAudioData, audioData: audioDataBuffer, realTime = false } = options
+  const { handler, audioData: audioDataBuffer, realTime = false } = options
 
   let disposeFlag = false
   const audioContext = new AudioContext({ sampleRate: SAMPLE_RATE })
@@ -14,6 +15,10 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
     if (disposeFlag) return
     disposeFlag = true
     await audioContext.close()
+    const events = await processor.stop()
+    for (const event of events) {
+      handler(event)
+    }
   }
 
   try {
@@ -47,7 +52,10 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
           }
         }
 
-        onAudioData(chunk)
+        const events = await processor.process(chunk)
+        for (const event of events) {
+          handler(event)
+        }
       }
     }
 
@@ -62,9 +70,9 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
 
 export interface ReadAudioOptions {
   /**
-   * A function that will be called when audio data is received.
+   * A function that will be called with the VAD event.
    */
-  onAudioData: (audioData: Float32Array) => void
+  handler: (event: VADEvent) => void
 
   /**
    * Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttpRequest, or FileReader.
