@@ -21,6 +21,7 @@ import type { VADEvent } from './types'
 
 const worker = new Worker(new URL('./vad-web-worker.js', import.meta.url), {
   type: 'module',
+  name: 'vad-web-worker',
 })
 
 const processorInner = wrap<VADProcessor>(worker)
