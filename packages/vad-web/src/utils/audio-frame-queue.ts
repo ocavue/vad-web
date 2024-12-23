@@ -1,7 +1,5 @@
-import Queue from 'denque'
-
 export class AudioFrameQueue {
-  private queue = new Queue<Float32Array>()
+  private queue = new Array<Float32Array>()
   private buffer: Float32Array
   private bufferPosition = 0
 
@@ -42,7 +40,7 @@ export class AudioFrameQueue {
   }
 
   clear(): void {
-    this.queue.clear()
+    this.queue.length = 0
     this.bufferPosition = 0
     this.buffer.fill(0)
   }
