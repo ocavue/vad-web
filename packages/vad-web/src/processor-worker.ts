@@ -2,7 +2,15 @@ import { expose } from 'comlink'
 
 import { VADProcessor } from './processor'
 
-export function registerProcessor() {
+export function exposeProcessor() {
   const processor = new VADProcessor()
-  expose(processor)
+  expose({
+    process: (audioData: Float32Array) => {
+      console.debug('[processor-worker] process')
+      return processor.process(audioData)
+    },
+    stop: () => {
+      return processor.stop()
+    },
+  })
 }

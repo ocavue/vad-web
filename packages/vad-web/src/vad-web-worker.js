@@ -1,3 +1,3 @@
-import { registerProcessor } from './processor-worker'
+import { exposeProcessor } from './processor-worker'
 
-registerProcessor()
+exposeProcessor()
