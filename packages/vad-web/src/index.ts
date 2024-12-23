@@ -29,18 +29,18 @@
  * ```ts
  * import { recordAudio, type VADEvent } from 'vad-web'
  *
- * const dispose = await recordAudio({
- *   handler: async (event: VADEvent) => {
- *     if (event.type === 'speech') {
- *       console.log('Speech detected')
- *     } else if (event.type === 'silence') {
- *       console.log('Silence detected')
- *     } else if (event.type === 'audio') {
- *       console.log('Speech audio data available')
- *       // Further processing can be done here
- *     }
- *   },
- * })
+ * function handler(event: VADEvent) {
+ *   if (event.type === 'speech') {
+ *     console.log('Speech detected')
+ *   } else if (event.type === 'silence') {
+ *     console.log('Silence detected')
+ *   } else if (event.type === 'audio') {
+ *     console.log('Speech audio data available')
+ *     // Further processing can be done here
+ *   }
+ * }
+ *
+ * const dispose = await recordAudio({ handler })
  * ```
  *
  * @module
