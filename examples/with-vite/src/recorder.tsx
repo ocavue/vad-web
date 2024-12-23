@@ -1,44 +1,49 @@
 import { useRef, useState } from 'react'
-import { startRecording } from 'vad-web'
+import { recordAudio } from 'vad-web'
 import { encodeWavFileFromArrays } from 'wav-file-encoder'
 
-export default function Recorder({
-  audioWorkletURL,
-}: {
-  audioWorkletURL: string
-}) {
+interface AudioChunk {
+  url: string
+  startTime: number
+  endTime: number
+}
+
+export default function Recorder() {
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const disposeRef = useRef<() => Promise<void>>()
-  const [audioURLs, setAudioURLs] = useState<string[]>([])
+  const [audioChunks, setAudioChunks] = useState<AudioChunk[]>([])
+
+  const addAudioChunk = (chunk: AudioChunk) => {
+    setAudioChunks((prev) => [...prev, chunk])
+  }
 
   const start = async () => {
     setIsRecording(true)
 
-    disposeRef.current = await startRecording({
-      onAudioData: (audioData, sampleRate) => {
-        console.log('Received audio data with sampleRate:', sampleRate)
-        const duration = audioData.length / sampleRate
-        console.log(
-          `Audio data length: ${audioData.length}, Duration: ${duration}s`,
-        )
-
-        // Convert Float32Array to Blob and create audio element
-        const audioBuffer = encodeWavFileFromArrays([audioData], sampleRate, 1)
-        const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
-        const audioURL = URL.createObjectURL(audioBlob)
-        setAudioURLs((prev) => [...prev, audioURL])
+    disposeRef.current = await recordAudio({
+      handler: (event) => {
+        if (event.type === 'audio') {
+          console.log(
+            `Audio received with duration ${event.endTime - event.startTime}ms`,
+          )
+          const { audioData, sampleRate, startTime, endTime } = event
+          const audioBuffer = encodeWavFileFromArrays(
+            [audioData],
+            sampleRate,
+            1,
+          )
+          const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
+          const url = URL.createObjectURL(audioBlob)
+          addAudioChunk({ url, startTime, endTime })
+        } else if (event.type === 'speech') {
+          console.log('Speech start detected')
+          setIsSpeaking(true)
+        } else if (event.type === 'silence') {
+          console.log('Speech end detected')
+          setIsSpeaking(false)
+        }
       },
-      onSilence: () => {
-        console.log('Silence detected')
-        setIsSpeaking(false)
-      },
-      onSpeech: () => {
-        console.log('Speech detected')
-        setIsSpeaking(true)
-      },
-      maxDurationSeconds: 5,
-      audioWorkletURL,
     })
   }
 
@@ -66,8 +71,17 @@ export default function Recorder({
         ) : null}
       </div>
       <div>
-        {audioURLs.map((url) => (
-          <audio key={url} src={url} controls />
+        {audioChunks.map((chunk) => (
+          <div key={chunk.url}>
+            <hr />
+            <div className="flex gap-2 items-center">
+              <audio src={chunk.url} controls />
+              <div>
+                {new Date(chunk.startTime).toLocaleTimeString()} -{' '}
+                {new Date(chunk.endTime).toLocaleTimeString()}
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </div>

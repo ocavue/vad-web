@@ -2,17 +2,17 @@
 
 [![NPM version](https://img.shields.io/npm/v/vad-web?color=a1b858)](https://www.npmjs.com/package/vad-web)
 
-A lightweight, browser-based Voice Activity Detection (VAD) library that
-detects speech in real-time audio streams.
+An enterprise-grade Voice Activity Detection (VAD) library for the browser.
+
+It is based on the [Silero VAD](https://github.com/snakers4/silero-vad) model
+and [Transformers.js](https://github.com/huggingface/transformers.js).
 
 ## Online demo
 
 https://vad-web.vercel.app
 
-## Examples
-
-* [With Vite.js](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
-* [With Next.js](https://github.com/ocavue/vad-web/tree/master/examples/with-next)
+[source
+code](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
 
 ## Installation
 
@@ -20,180 +20,87 @@ https://vad-web.vercel.app
 npm install vad-web
 ```
 
-## Credits
+## Usage
 
-* This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library,
-  which is licensed under the [MIT License](https://github.com/indutny/fft.js?tab=readme-ov-file#license).
+Call `recordAudio` to start recording audio and get a dispose function. Under
+the hood, it will run the [Silero
+VAD](https://github.com/snakers4/silero-vad) model in a web worker to avoid
+blocking the main thread.
 
-* The VAD algorithm is based on the paper:
+```ts
+import { recordAudio, type VADEvent } from 'vad-web'
 
-  Moattar, Mohammad & Homayoonpoor, Mahdi. (2010). A simple but efficient
-  real-time voice activity detection algorithm. European Signal Processing
-  Conference.
+function handler(event: VADEvent) {
+  if (event.type === 'speech') {
+    console.log('Speech detected')
+  } else if (event.type === 'silence') {
+    console.log('Silence detected')
+  } else if (event.type === 'audio') {
+    console.log('Speech audio data available')
+    // Further processing can be done here
+  }
+}
 
-  <https://www.researchgate.net/publication/255667085_A_simple_but_efficient_real-time_voice_activity_detection_algorithm>
-
-* The VAD algorithm implementation is based on the [`vad-audio-worklet`](https://github.com/thurti/vad-audio-worklet) library,
-  which is licensed under the [MIT License](https://github.com/thurti/vad-audio-worklet/blob/main/LICENSE).
+const dispose = await recordAudio({ handler })
+```
 
 ## API Reference
 
-### startRecording <a id="start-recording" href="#start-recording">#</a>
+### recordAudio <a id="record-audio" href="#record-audio">#</a>
 
 ```ts
-function startRecording(options: RecordingOptions): Promise<DisposeFunction>
+function recordAudio(options: RecordAudioOptions): Promise<DisposeFunction>
 ```
 
-Starts a recording session that records audio from microphone.
+Records audio from the microphone and calls the `onAudioData` callback with the audio data.
 
 **Returns**
 
-A function to stop the recording session.
+A function to dispose of the audio recorder.
 
-### startRecognition <a id="start-recognition" href="#start-recognition">#</a>
-
-```ts
-function startRecognition(options: RecognitionOptions): Promise<DisposeFunction>
-```
-
-Starts a recognition session that processes the given audio data.
-
-**Returns**
-
-A function to stop the recognition session.
-
-### RecordingOptions <a id="recording-options" href="#recording-options">#</a>
+### RecordAudioOptions <a id="record-audio-options" href="#record-audio-options">#</a>
 
 <dl>
 
 <dt>
 
-`onAudioData?: (audioData: Float32Array<ArrayBufferLike>, sampleRate: number) => void`
+`handler: (event: VADEvent) => void`
 
 </dt>
 
 <dd>
 
-A function that will be called when audio data is received.
-
-</dd>
-
-<dt>
-
-`onSilence?: () => void`
-
-</dt>
-
-<dd>
-
-A function that will be called when silence is detected.
-
-</dd>
-
-<dt>
-
-`onSpeech?: () => void`
-
-</dt>
-
-<dd>
-
-A function that will be called when speech is detected.
-
-</dd>
-
-<dt>
-
-`maxDurationSeconds: number`
-
-</dt>
-
-<dd>
-
-The maximum duration of the a single chunk of audio data in seconds.
-
-</dd>
-
-<dt>
-
-`audioWorkletURL: string | URL`
-
-</dt>
-
-<dd>
-
-The URL of the audio worklet script.
-
-It is used to process audio in a separate thread with very low latency.
-
-If you are using [Vite](https://vite.dev/), you can use the following import:
-
-```ts
-// audioWorkletURL is a string pointing to the audio worklet script
-import audioWorkletURL from 'vad-web/vad-audio-worklet?url'
-```
-
-If you are using other bundlers like [webpack](https://webpack.js.org/), you need copy the
-[`vad-audio-worklet.js`](https://unpkg.com/vad-web/dist/vad-audio-worklet.js)
-file to your public directory, then set the `audioWorkletURL` to the path of the file:
-
-```ts
-const audioWorkletURL = '/vad-audio-worklet.js'
-```
+A function that will be called with the VAD event.
 
 </dd>
 
 </dl>
 
-### RecognitionOptions <a id="recognition-options" href="#recognition-options">#</a>
+### readAudio <a id="read-audio" href="#read-audio">#</a>
+
+```ts
+function readAudio(options: ReadAudioOptions): Promise<DisposeFunction>
+```
+
+Reads audio data from an ArrayBuffer and calls the `onAudioData` callback with the audio data.
+
+**Returns**
+
+A function to dispose of the audio reader.
+
+### ReadAudioOptions <a id="read-audio-options" href="#read-audio-options">#</a>
 
 <dl>
 
 <dt>
 
-`onAudioData?: (audioData: Float32Array<ArrayBufferLike>, sampleRate: number) => void`
+`handler: (event: VADEvent) => void`
 
 </dt>
 
 <dd>
 
-A function that will be called when audio data is received.
-
-</dd>
-
-<dt>
-
-`onSilence?: () => void`
-
-</dt>
-
-<dd>
-
-A function that will be called when silence is detected.
-
-</dd>
-
-<dt>
-
-`onSpeech?: () => void`
-
-</dt>
-
-<dd>
-
-A function that will be called when speech is detected.
-
-</dd>
-
-<dt>
-
-`maxDurationSeconds: number`
-
-</dt>
-
-<dd>
-
-The maximum duration of the a single chunk of audio data in seconds.
+A function that will be called with the VAD event.
 
 </dd>
 
@@ -218,6 +125,114 @@ Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttp
 <dd>
 
 If true, simulates real-time processing by adding delays to match the audio duration.
+
+**Default**: `false`
+
+</dd>
+
+</dl>
+
+### VADEvent <a id="vad-event" href="#vad-event">#</a>
+
+**Type**: `VADSpeechEvent | VADSilenceEvent | VADAudioEvent`
+
+### VADAudioEvent <a id="vad-audio-event" href="#vad-audio-event">#</a>
+
+A event fired when speech audio data is available.
+
+<dl>
+
+<dt>
+
+`type: "audio"`
+
+</dt>
+
+<dd>
+
+</dd>
+
+<dt>
+
+`startTime: number`
+
+</dt>
+
+<dd>
+
+A timestamp in milliseconds
+
+</dd>
+
+<dt>
+
+`endTime: number`
+
+</dt>
+
+<dd>
+
+A timestamp in milliseconds
+
+</dd>
+
+<dt>
+
+`audioData: Float32Array<ArrayBufferLike>`
+
+</dt>
+
+<dd>
+
+The audio data
+
+</dd>
+
+<dt>
+
+`sampleRate: number`
+
+</dt>
+
+<dd>
+
+The sample rate of the audio data
+
+</dd>
+
+</dl>
+
+### VADSilenceEvent <a id="vad-silence-event" href="#vad-silence-event">#</a>
+
+A event fired when a speech ends.
+
+<dl>
+
+<dt>
+
+`type: "silence"`
+
+</dt>
+
+<dd>
+
+</dd>
+
+</dl>
+
+### VADSpeechEvent <a id="vad-speech-event" href="#vad-speech-event">#</a>
+
+A event fired when a speech starts.
+
+<dl>
+
+<dt>
+
+`type: "speech"`
+
+</dt>
+
+<dd>
 
 </dd>
 

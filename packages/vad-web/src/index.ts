@@ -1,17 +1,17 @@
 /**
  * [![NPM version](https://img.shields.io/npm/v/vad-web?color=a1b858)](https://www.npmjs.com/package/vad-web)
  *
- * A lightweight, browser-based Voice Activity Detection (VAD) library that
- * detects speech in real-time audio streams.
+ * An enterprise-grade Voice Activity Detection (VAD) library for the browser.
+ *
+ * It is based on the [Silero VAD](https://github.com/snakers4/silero-vad) model
+ * and [Transformers.js](https://github.com/huggingface/transformers.js).
  *
  * ## Online demo
  *
  * https://vad-web.vercel.app
  *
- * ## Examples
- *
- * - [With Vite.js](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
- * - [With Next.js](https://github.com/ocavue/vad-web/tree/master/examples/with-next)
+ * [source
+ * code](https://github.com/ocavue/vad-web/tree/master/examples/with-vite)
  *
  * ## Installation
  *
@@ -19,31 +19,39 @@
  * npm install vad-web
  * ```
  *
- * ## Credits
+ * ## Usage
  *
- * - This package bundles the [`fft.js`](https://github.com/indutny/fft.js) library,
- *   which is licensed under the [MIT License](https://github.com/indutny/fft.js?tab=readme-ov-file#license).
+ * Call `recordAudio` to start recording audio and get a dispose function. Under
+ * the hood, it will run the [Silero
+ * VAD](https://github.com/snakers4/silero-vad) model in a web worker to avoid
+ * blocking the main thread.
  *
- * - The VAD algorithm is based on the paper:
+ * ```ts
+ * import { recordAudio, type VADEvent } from 'vad-web'
  *
- *   Moattar, Mohammad & Homayoonpoor, Mahdi. (2010). A simple but efficient
- *   real-time voice activity detection algorithm. European Signal Processing
- *   Conference.
+ * function handler(event: VADEvent) {
+ *   if (event.type === 'speech') {
+ *     console.log('Speech detected')
+ *   } else if (event.type === 'silence') {
+ *     console.log('Silence detected')
+ *   } else if (event.type === 'audio') {
+ *     console.log('Speech audio data available')
+ *     // Further processing can be done here
+ *   }
+ * }
  *
- *   <https://www.researchgate.net/publication/255667085_A_simple_but_efficient_real-time_voice_activity_detection_algorithm>
- *
- * - The VAD algorithm implementation is based on the [`vad-audio-worklet`](https://github.com/thurti/vad-audio-worklet) library,
- *   which is licensed under the [MIT License](https://github.com/thurti/vad-audio-worklet/blob/main/LICENSE).
+ * const dispose = await recordAudio({ handler })
+ * ```
  *
  * @module
  */
 
-export { startRecording } from './recording'
+export { recordAudio, type RecordAudioOptions } from './record-audio'
 
-export { startRecognition } from './recognition'
+export { readAudio, type ReadAudioOptions } from './read-audio'
 
-export type { RecordingOptions } from './recording'
+export type { VADEvent } from './types'
 
-export type { RecognitionOptions } from './recognition'
+export type { VADAudioEvent, VADSilenceEvent, VADSpeechEvent } from './types'
 
 export type { DisposeFunction } from './types'

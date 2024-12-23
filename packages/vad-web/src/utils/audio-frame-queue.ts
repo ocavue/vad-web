@@ -1,5 +1,5 @@
 export class AudioFrameQueue {
-  private frames: Float32Array[] = []
+  private queue = new Array<Float32Array>()
   private buffer: Float32Array
   private bufferPosition = 0
 
@@ -8,6 +8,11 @@ export class AudioFrameQueue {
   }
 
   enqueue(input: Float32Array): void {
+    if (this.bufferPosition === 0 && input.length === this.frameSize) {
+      this.queue.push(input)
+      return
+    }
+
     let inputPosition = 0
 
     while (inputPosition < input.length) {
@@ -23,7 +28,7 @@ export class AudioFrameQueue {
       inputPosition += toCopy
 
       if (this.bufferPosition >= this.frameSize) {
-        this.frames.push(this.buffer)
+        this.queue.push(this.buffer)
         this.buffer = new Float32Array(this.frameSize)
         this.bufferPosition = 0
       }
@@ -31,6 +36,12 @@ export class AudioFrameQueue {
   }
 
   dequeue(): Float32Array | undefined {
-    return this.frames.shift()
+    return this.queue.shift()
+  }
+
+  clear(): void {
+    this.queue.length = 0
+    this.bufferPosition = 0
+    this.buffer.fill(0)
   }
 }

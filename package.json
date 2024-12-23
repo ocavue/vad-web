@@ -10,7 +10,7 @@
     "dev": "pnpm run build && pnpm -r run dev",
     "lint": "eslint .",
     "fix": "eslint --fix . && prettier --write .",
-    "test": "echo 'No tests yet'",
+    "test": "pnpm -r run test",
     "typecheck": "tsc -b",
     "change": "changeset",
     "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
