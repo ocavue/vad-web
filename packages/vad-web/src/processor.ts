@@ -32,9 +32,9 @@ export class VADProcessor {
   async process(audioData: Float32Array): Promise<VADEvent[]> {
     this.frameQueue.enqueue(audioData)
 
-    let frame: Float32Array | undefined
-
-    while ((frame = this.frameQueue.dequeue())) {
+    while (true) {
+      const frame = this.frameQueue.dequeue()
+      if (!frame) break
       await this.processFrame(frame)
     }
 

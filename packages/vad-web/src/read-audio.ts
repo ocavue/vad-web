@@ -1,4 +1,4 @@
-import { SAMPLE_RATE } from './constants'
+import { AUDIO_FRAME_SIZE, SAMPLE_RATE } from './constants'
 import { processor } from './processor-main'
 import type { DisposeFunction, VADEvent } from './types'
 import { sleep } from './utils/sleep'
@@ -26,8 +26,7 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
       await audioContext.decodeAudioData(audioDataBuffer)
     const sampleRate = decoded.sampleRate
 
-    // Each chunk contains 128 samples, which is same as the `AudioWorkletProcessor.process` method.
-    const chunkSize = 128
+    const chunkSize = AUDIO_FRAME_SIZE
 
     const handle = async () => {
       await waitForIdle()
