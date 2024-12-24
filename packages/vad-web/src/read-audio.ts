@@ -57,6 +57,8 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
           handler(event)
         }
       }
+
+      await dispose()
     }
 
     void handle()
