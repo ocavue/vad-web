@@ -1,5 +1,13 @@
 # vad-web
 
+## 0.5.1
+
+### Patch Changes
+
+- c288c3b: Fix a bug where any audio chunk that is about 30 seconds long would be discarded.
+
+  Tweak the configuration for Silero VAD model to reduce false negatives.
+
 ## 0.5.0
 
 ### Minor Changes
