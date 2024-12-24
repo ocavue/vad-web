@@ -2,4 +2,4 @@
 'vad-web': patch
 ---
 
-Fix a bug where any audio chunk longer than 30 seconds would be discarded.
+Fix a bug where any audio chunk that is about 30 seconds long would be discarded.
