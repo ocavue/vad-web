@@ -22,6 +22,7 @@ export class VADProcessor {
   private speechSamples = 0
   private postSpeechSamples = 0
   private frameQueue = new AudioFrameQueue(AUDIO_FRAME_SIZE)
+  private events: VADEvent[] = []
 
   /**
    * Processes the audio data.
@@ -31,31 +32,37 @@ export class VADProcessor {
   async process(audioData: Float32Array): Promise<VADEvent[]> {
     this.frameQueue.enqueue(audioData)
 
-    let frame: Float32Array | undefined
-
-    const events: VADEvent[] = []
-
-    while ((frame = this.frameQueue.dequeue())) {
-      events.push(...(await this.processFrame(frame)))
+    while (true) {
+      const frame = this.frameQueue.dequeue()
+      if (!frame) break
+      await this.processFrame(frame)
     }
 
-    return events
+    return this.clearEvents()
   }
 
   /**
    * Stops the VAD processor and handles the last unfinished speech if any.
    */
   stop(): VADEvent[] {
-    return this.handleAudioData()
+    this.handleAudioData()
+    return this.clearEvents()
   }
 
-  private async processFrame(audioFrame: Float32Array): Promise<VADEvent[]> {
+  private clearEvents(): VADEvent[] {
+    if (this.events.length === 0) return []
+    const events = this.events
+    this.events = []
+    return events
+  }
+
+  private async processFrame(audioFrame: Float32Array): Promise<void> {
     // Detect if the current audio frame is speech
     const isSpeech = await this.vad.process(audioFrame, this.wasSpeech)
 
     if (!this.wasSpeech && !isSpeech) {
       this.buffer.write(audioFrame)
-      return []
+      return
     }
 
     if (
@@ -68,16 +75,15 @@ export class VADProcessor {
     this.buffer.write(audioFrame)
 
     if (isSpeech) {
-      const events: VADEvent[] = []
       if (!this.wasSpeech) {
-        events.push({ type: 'speech' })
+        this.events.push({ type: 'speech' })
       }
       this.wasSpeech = true
       // If postSpeechSamples is not zero, it means there was a short pause between
       // two speech frames, which is considered as part of the current speech chunk.
       this.speechSamples += this.postSpeechSamples + audioFrame.length
       this.postSpeechSamples = 0
-      return events
+      return
     }
 
     // At this point, isSpeech is false and wasSpeech is true, which means we detected
@@ -88,19 +94,19 @@ export class VADProcessor {
     if (this.postSpeechSamples < MIN_SILENCE_SAMPLES) {
       // There was a short pause, but not long enough to consider the end of a speech chunk
       // (e.g., the speaker took a breath), so we continue recording
-      return []
+      return
     }
 
     this.wasSpeech = false
-    const events: VADEvent[] = [{ type: 'silence' }]
-    events.push(...this.handleAudioData())
-    return events
+    this.events.push({ type: 'silence' })
+    this.handleAudioData()
+    return
   }
 
-  private handleAudioData(): VADEvent[] {
+  private handleAudioData(): void {
     if (this.speechSamples < MIN_SPEECH_SAMPLES) {
       this.reset()
-      return []
+      return
     }
 
     const dropSamples = Math.max(0, this.postSpeechSamples - SPEECH_PAD_SAMPLES)
@@ -132,7 +138,7 @@ export class VADProcessor {
       audioData,
       sampleRate: SAMPLE_RATE,
     }
-    return [event]
+    this.events.push(event)
   }
 
   private reset() {

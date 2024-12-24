@@ -4,9 +4,10 @@ import {
   createRecorderAudioWorkletNode,
 } from 'recorder-audio-worklet'
 
-import { SAMPLE_RATE } from './constants'
+import { AUDIO_FRAME_SIZE, SAMPLE_RATE } from './constants'
 import { processor } from './processor-main'
 import type { DisposeFunction, VADEvent } from './types'
+import { AudioFrameQueue } from './utils/audio-frame-queue'
 
 const ERROR_MESSAGE =
   'Missing AudioWorklet support. Maybe this is not running in a secure context.'
@@ -49,14 +50,23 @@ async function start(handler: (event: VADEvent) => void): Promise<void> {
 
   const channel = new MessageChannel()
   const { port1, port2 } = channel
+  const queue = new AudioFrameQueue(AUDIO_FRAME_SIZE)
 
   // eslint-disable-next-line unicorn/prefer-add-event-listener
   port2.onmessage = async (event) => {
     const data = event.data as Float32Array[]
     const audioData: Float32Array = data?.[0]
 
-    if (audioData instanceof Float32Array) {
-      const events = await processor.process(audioData)
+    if (!(audioData instanceof Float32Array)) {
+      return
+    }
+
+    queue.enqueue(audioData)
+
+    while (true) {
+      const frame = queue.dequeue()
+      if (!frame) break
+      const events = await processor.process(frame)
       for (const event of events) {
         handler(event)
       }

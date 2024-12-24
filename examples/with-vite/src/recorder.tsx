@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
-import { recordAudio } from 'vad-web'
+import { readAudio, recordAudio, type VADEvent } from 'vad-web'
 import { encodeWavFileFromArrays } from 'wav-file-encoder'
+
+import { uploadAudioFile } from './upload-audio-file'
 
 interface AudioChunk {
   url: string
@@ -18,32 +20,45 @@ export default function Recorder() {
     setAudioChunks((prev) => [...prev, chunk])
   }
 
-  const start = async () => {
+  const handleVAD = (event: VADEvent) => {
+    if (event.type === 'audio') {
+      console.log(
+        `Audio received with duration ${event.endTime - event.startTime}ms`,
+      )
+      const { audioData, sampleRate, startTime, endTime } = event
+      const audioBuffer = encodeWavFileFromArrays([audioData], sampleRate, 1)
+      const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
+      const url = URL.createObjectURL(audioBlob)
+      addAudioChunk({ url, startTime, endTime })
+    } else if (event.type === 'speech') {
+      console.log('Speech start detected')
+      setIsSpeaking(true)
+    } else if (event.type === 'silence') {
+      console.log('Speech end detected')
+      setIsSpeaking(false)
+    }
+  }
+
+  const handleStartRecording = async () => {
     setIsRecording(true)
 
     disposeRef.current = await recordAudio({
-      handler: (event) => {
-        if (event.type === 'audio') {
-          console.log(
-            `Audio received with duration ${event.endTime - event.startTime}ms`,
-          )
-          const { audioData, sampleRate, startTime, endTime } = event
-          const audioBuffer = encodeWavFileFromArrays(
-            [audioData],
-            sampleRate,
-            1,
-          )
-          const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
-          const url = URL.createObjectURL(audioBlob)
-          addAudioChunk({ url, startTime, endTime })
-        } else if (event.type === 'speech') {
-          console.log('Speech start detected')
-          setIsSpeaking(true)
-        } else if (event.type === 'silence') {
-          console.log('Speech end detected')
-          setIsSpeaking(false)
-        }
-      },
+      handler: handleVAD,
+    })
+  }
+
+  const handleUploadAudioFile = async () => {
+    setIsRecording(true)
+
+    const audioFileURL = await uploadAudioFile()
+    if (!audioFileURL) return
+
+    const audioData = await fetch(audioFileURL).then((res) => res.arrayBuffer())
+
+    disposeRef.current = await readAudio({
+      handler: handleVAD,
+      audioData,
+      // realTime: true,
     })
   }
 
@@ -59,7 +74,10 @@ export default function Recorder() {
         {isRecording ? (
           <button onClick={stop}>Stop Recording</button>
         ) : (
-          <button onClick={start}>Start Recording</button>
+          <>
+            <button onClick={handleStartRecording}>Start Recording</button>
+            <button onClick={handleUploadAudioFile}>Upload file</button>
+          </>
         )}{' '}
         {isRecording ? (
           <>
