@@ -9,7 +9,6 @@ import pLimit from 'p-limit'
 
 import { EXIT_THRESHOLD, SAMPLE_RATE, SPEECH_THRESHOLD } from './constants'
 
-
 const getModel = cache(async () => {
   const silero_vad = await AutoModel.from_pretrained(
     'onnx-community/silero-vad',
@@ -23,7 +22,7 @@ const getModel = cache(async () => {
     input: Tensor
     sr: Tensor
     state: Tensor
-  }) => Promise<{ stateN: Tensor; output: Tensor }>  
+  }) => Promise<{ stateN: Tensor; output: Tensor }>
 })
 
 const limit = pLimit(1)
