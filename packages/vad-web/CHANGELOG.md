@@ -1,5 +1,11 @@
 # vad-web
 
+## 0.6.0
+
+### Minor Changes
+
+- b8524f8: This version contains some breaking changes to the API. Now `recordAudio` and `readAudio` accepts `onSpeechStart`, `onSpeechEnd`, and `onSpeechAvailable` callbacks. Please refer to the README for more details.
+
 ## 0.5.1
 
 ### Patch Changes
