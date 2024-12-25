@@ -28,20 +28,20 @@ VAD](https://github.com/snakers4/silero-vad) model in a web worker to avoid
 blocking the main thread.
 
 ```ts
-import { recordAudio, type VADEvent } from 'vad-web'
+import { recordAudio } from 'vad-web'
 
-function handler(event: VADEvent) {
-  if (event.type === 'speech') {
+const dispose = await recordAudio({
+  onSpeechStart: () => {
     console.log('Speech detected')
-  } else if (event.type === 'silence') {
+  },
+  onSpeechEnd: () => {
     console.log('Silence detected')
-  } else if (event.type === 'audio') {
-    console.log('Speech audio data available')
+  },
+  onSpeechAvailable: ({ audioData, sampleRate, startTime, endTime }) => {
+    console.log(`Audio received with duration ${endTime - startTime}ms`)
     // Further processing can be done here
   }
-}
-
-const dispose = await recordAudio({ handler })
+})
 ```
 
 ## API Reference
@@ -64,13 +64,37 @@ A function to dispose of the audio recorder.
 
 <dt>
 
-`handler: (event: VADEvent) => void`
+`onSpeechStart?: () => void`
 
 </dt>
 
 <dd>
 
-A function that will be called with the VAD event.
+A function that will be called when a speech is detected.
+
+</dd>
+
+<dt>
+
+`onSpeechEnd?: () => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when a silence is detected.
+
+</dd>
+
+<dt>
+
+`onSpeechAvailable?: (data: SpeechData) => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when speech audio data is available.
 
 </dd>
 
@@ -91,18 +115,6 @@ A function to dispose of the audio reader.
 ### ReadAudioOptions <a id="read-audio-options" href="#read-audio-options">#</a>
 
 <dl>
-
-<dt>
-
-`handler: (event: VADEvent) => void`
-
-</dt>
-
-<dd>
-
-A function that will be called with the VAD event.
-
-</dd>
 
 <dt>
 
@@ -130,27 +142,49 @@ If true, simulates real-time processing by adding delays to match the audio dura
 
 </dd>
 
-</dl>
-
-### VADEvent <a id="vad-event" href="#vad-event">#</a>
-
-**Type**: `VADSpeechEvent | VADSilenceEvent | VADAudioEvent`
-
-### VADAudioEvent <a id="vad-audio-event" href="#vad-audio-event">#</a>
-
-A event fired when speech audio data is available.
-
-<dl>
-
 <dt>
 
-`type: "audio"`
+`onSpeechStart?: () => void`
 
 </dt>
 
 <dd>
 
+A function that will be called when a speech is detected.
+
 </dd>
+
+<dt>
+
+`onSpeechEnd?: () => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when a silence is detected.
+
+</dd>
+
+<dt>
+
+`onSpeechAvailable?: (data: SpeechData) => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when speech audio data is available.
+
+</dd>
+
+</dl>
+
+### SpeechData <a id="speech-data" href="#speech-data">#</a>
+
+An object representing speech data.
+
+<dl>
 
 <dt>
 
@@ -197,42 +231,6 @@ The audio data
 <dd>
 
 The sample rate of the audio data
-
-</dd>
-
-</dl>
-
-### VADSilenceEvent <a id="vad-silence-event" href="#vad-silence-event">#</a>
-
-A event fired when a speech ends.
-
-<dl>
-
-<dt>
-
-`type: "silence"`
-
-</dt>
-
-<dd>
-
-</dd>
-
-</dl>
-
-### VADSpeechEvent <a id="vad-speech-event" href="#vad-speech-event">#</a>
-
-A event fired when a speech starts.
-
-<dl>
-
-<dt>
-
-`type: "speech"`
-
-</dt>
-
-<dd>
 
 </dd>
 

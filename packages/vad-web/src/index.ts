@@ -27,20 +27,20 @@
  * blocking the main thread.
  *
  * ```ts
- * import { recordAudio, type VADEvent } from 'vad-web'
- *
- * function handler(event: VADEvent) {
- *   if (event.type === 'speech') {
+ * import { recordAudio } from 'vad-web'
+ * 
+ * const dispose = await recordAudio({
+ *   onSpeechStart: () => {
  *     console.log('Speech detected')
- *   } else if (event.type === 'silence') {
+ *   },
+ *   onSpeechEnd: () => {
  *     console.log('Silence detected')
- *   } else if (event.type === 'audio') {
- *     console.log('Speech audio data available')
+ *   },
+ *   onSpeechAvailable: ({ audioData, sampleRate, startTime, endTime }) => {
+ *     console.log(`Audio received with duration ${endTime - startTime}ms`)
  *     // Further processing can be done here
  *   }
- * }
- *
- * const dispose = await recordAudio({ handler })
+ * })
  * ```
  *
  * @module
@@ -50,8 +50,6 @@ export { recordAudio, type RecordAudioOptions } from './record-audio'
 
 export { readAudio, type ReadAudioOptions } from './read-audio'
 
-export type { VADEvent } from './types'
-
-export type { VADAudioEvent, VADSilenceEvent, VADSpeechEvent } from './types'
+export type { SpeechData } from './types'
 
 export type { DisposeFunction } from './types'
