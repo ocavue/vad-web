@@ -53,7 +53,7 @@ export interface EventHandlers {
 }
 
 /**
- * An interface that represents speech data.
+ * An object representing speech data.
  */
 export interface SpeechData {
   /** A timestamp in milliseconds */
