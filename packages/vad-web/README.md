@@ -94,18 +94,6 @@ A function to dispose of the audio reader.
 
 <dt>
 
-`handler: (event: VADEvent) => void`
-
-</dt>
-
-<dd>
-
-A function that will be called with the VAD event.
-
-</dd>
-
-<dt>
-
 `audioData: ArrayBuffer`
 
 </dt>
@@ -127,6 +115,18 @@ Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttp
 If true, simulates real-time processing by adding delays to match the audio duration.
 
 **Default**: `false`
+
+</dd>
+
+<dt>
+
+`handler: (event: VADEvent) => void`
+
+</dt>
+
+<dd>
+
+A function that will be called with the VAD event.
 
 </dd>
 

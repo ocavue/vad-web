@@ -1,11 +1,12 @@
 import { AUDIO_FRAME_SIZE, SAMPLE_RATE } from './constants'
+import { dispatchEvents } from './event'
 import { processor } from './processor-main'
-import type { DisposeFunction, VADEvent } from './types'
+import type { DisposeFunction, EventHandlers } from './types'
 import { sleep } from './utils/sleep'
 import { waitForIdle } from './utils/wait-for-idle'
 
 async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
-  const { handler, audioData: audioDataBuffer, realTime = false } = options
+  const { audioData: audioDataBuffer, realTime = false, ...handlers } = options
 
   let disposeFlag = false
   const audioContext = new AudioContext({ sampleRate: SAMPLE_RATE })
@@ -15,10 +16,8 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
     if (disposeFlag) return
     disposeFlag = true
     await audioContext.close()
-    const events = await processor.stop()
-    for (const event of events) {
-      handler(event)
-    }
+    const messages = await processor.stop()
+    dispatchEvents(messages, handlers)
   }
 
   try {
@@ -51,10 +50,8 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
           }
         }
 
-        const events = await processor.process(chunk)
-        for (const event of events) {
-          handler(event)
-        }
+        const messages = await processor.process(chunk)
+        dispatchEvents(messages, handlers)
       }
 
       await dispose()
@@ -69,12 +66,7 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
   return dispose
 }
 
-export interface ReadAudioOptions {
-  /**
-   * A function that will be called with the VAD event.
-   */
-  handler: (event: VADEvent) => void
-
+export interface ReadAudioOptions extends EventHandlers {
   /**
    * Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttpRequest, or FileReader.
    */

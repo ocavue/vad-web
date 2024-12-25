@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { readAudio, recordAudio, type VADEvent } from 'vad-web'
+import { readAudio, recordAudio, type SpeechData } from 'vad-web'
 import { encodeWavFileFromArrays } from 'wav-file-encoder'
 
 import { uploadAudioFile } from './upload-audio-file'
@@ -20,30 +20,34 @@ export default function Recorder() {
     setAudioChunks((prev) => [...prev, chunk])
   }
 
-  const handleVAD = (event: VADEvent) => {
-    if (event.type === 'audio') {
-      console.log(
-        `Audio received with duration ${event.endTime - event.startTime}ms`,
-      )
-      const { audioData, sampleRate, startTime, endTime } = event
-      const audioBuffer = encodeWavFileFromArrays([audioData], sampleRate, 1)
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
-      const url = URL.createObjectURL(audioBlob)
-      addAudioChunk({ url, startTime, endTime })
-    } else if (event.type === 'speech') {
-      console.log('Speech start detected')
-      setIsSpeaking(true)
-    } else if (event.type === 'silence') {
-      console.log('Speech end detected')
-      setIsSpeaking(false)
-    }
+  const handleSpeechStart = () => {
+    console.log('Speech detected')
+    setIsSpeaking(true)
+  }
+  const handleSpeechEnd = () => {
+    console.log('Silence detected')
+    setIsSpeaking(false)
+  }
+  const handleSpeechAvailable = ({
+    audioData,
+    sampleRate,
+    startTime,
+    endTime,
+  }: SpeechData) => {
+    console.log(`Audio received with duration ${endTime - startTime}ms`)
+    const audioBuffer = encodeWavFileFromArrays([audioData], sampleRate, 1)
+    const audioBlob = new Blob([audioBuffer], { type: 'audio/wav' })
+    const url = URL.createObjectURL(audioBlob)
+    addAudioChunk({ url, startTime, endTime })
   }
 
   const handleStartRecording = async () => {
     setIsRecording(true)
 
     disposeRef.current = await recordAudio({
-      handler: handleVAD,
+      onSpeechStart: handleSpeechStart,
+      onSpeechEnd: handleSpeechEnd,
+      onSpeechAvailable: handleSpeechAvailable,
     })
   }
 
@@ -56,7 +60,9 @@ export default function Recorder() {
     const audioData = await fetch(audioFileURL).then((res) => res.arrayBuffer())
 
     disposeRef.current = await readAudio({
-      handler: handleVAD,
+      onSpeechStart: handleSpeechStart,
+      onSpeechEnd: handleSpeechEnd,
+      onSpeechAvailable: handleSpeechAvailable,
       audioData,
       // realTime: true,
     })

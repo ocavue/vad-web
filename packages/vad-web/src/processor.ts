@@ -8,7 +8,7 @@ import {
   SPEECH_PAD_SAMPLES,
 } from './constants'
 import { SileroVAD } from './silero-vad'
-import type { VADEvent } from './types'
+import type { WorkerToMainMessage } from './types'
 import { AudioDataBuffer } from './utils/audio-data-buffer'
 import { AudioFrameQueue } from './utils/audio-frame-queue'
 
@@ -22,14 +22,14 @@ export class VADProcessor {
   private speechSamples = 0
   private postSpeechSamples = 0
   private frameQueue = new AudioFrameQueue(AUDIO_FRAME_SIZE)
-  private events: VADEvent[] = []
+  private message: WorkerToMainMessage[] = []
 
   /**
    * Processes the audio data.
    *
-   * @returns A list of events that occurred during the processing.
+   * @returns A list of messages that occurred during the processing.
    */
-  async process(audioData: Float32Array): Promise<VADEvent[]> {
+  async process(audioData: Float32Array): Promise<WorkerToMainMessage[]> {
     this.frameQueue.enqueue(audioData)
 
     while (true) {
@@ -44,15 +44,15 @@ export class VADProcessor {
   /**
    * Stops the VAD processor and handles the last unfinished speech if any.
    */
-  stop(): VADEvent[] {
+  stop(): WorkerToMainMessage[] {
     this.handleAudioData()
     return this.clearEvents()
   }
 
-  private clearEvents(): VADEvent[] {
-    if (this.events.length === 0) return []
-    const events = this.events
-    this.events = []
+  private clearEvents(): WorkerToMainMessage[] {
+    if (this.message.length === 0) return []
+    const events = this.message
+    this.message = []
     return events
   }
 
@@ -76,7 +76,7 @@ export class VADProcessor {
 
     if (isSpeech) {
       if (!this.wasSpeech) {
-        this.events.push({ type: 'speech' })
+        this.message.push({ type: 'speechStart' })
       }
       this.wasSpeech = true
       // If postSpeechSamples is not zero, it means there was a short pause between
@@ -98,7 +98,7 @@ export class VADProcessor {
     }
 
     this.wasSpeech = false
-    this.events.push({ type: 'silence' })
+    this.message.push({ type: 'speechEnd' })
     this.handleAudioData()
     return
   }
@@ -131,14 +131,16 @@ export class VADProcessor {
 
     this.reset()
 
-    const event: VADEvent = {
-      type: 'audio',
-      startTime,
-      endTime,
-      audioData,
-      sampleRate: SAMPLE_RATE,
+    const event: WorkerToMainMessage = {
+      type: 'speechAvailable',
+      data: {
+        startTime,
+        endTime,
+        audioData,
+        sampleRate: SAMPLE_RATE,
+      },
     }
-    this.events.push(event)
+    this.message.push(event)
   }
 
   private reset() {

@@ -18,24 +18,44 @@ export type MainToWorkerMessage =
     }
 
 /**
- * A event fired when a speech starts.
+ * @internal
  */
-export interface VADSpeechEvent {
-  type: 'speech'
+export type WorkerToMainMessage =
+  | {
+      type: 'speechStart'
+    }
+  | {
+      type: 'speechEnd'
+    }
+  | {
+      type: 'speechAvailable'
+      data: SpeechData
+    }
+
+/**
+ * @internal
+ */
+export interface EventHandlers {
+  /**
+   * A function that will be called when a speech is detected.
+   */
+  onSpeechStart?: () => void
+
+  /**
+   * A function that will be called when a silence is detected.
+   */
+  onSpeechEnd?: () => void
+
+  /**
+   * A function that will be called when speech audio data is available.
+   */
+  onSpeechAvailable?: (data: SpeechData) => void
 }
 
 /**
- * A event fired when a speech ends.
+ * An interface that represents speech data.
  */
-export interface VADSilenceEvent {
-  type: 'silence'
-}
-
-/**
- * A event fired when speech audio data is available.
- */
-export interface VADAudioEvent {
-  type: 'audio'
+export interface SpeechData {
   /** A timestamp in milliseconds */
   startTime: number
   /** A timestamp in milliseconds */
@@ -45,5 +65,3 @@ export interface VADAudioEvent {
   /** The sample rate of the audio data */
   sampleRate: number
 }
-
-export type VADEvent = VADSpeechEvent | VADSilenceEvent | VADAudioEvent

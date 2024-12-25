@@ -5,8 +5,9 @@ import {
 } from 'recorder-audio-worklet'
 
 import { AUDIO_FRAME_SIZE, SAMPLE_RATE } from './constants'
+import { dispatchEvents } from './event'
 import { processor } from './processor-main'
-import type { DisposeFunction, VADEvent } from './types'
+import type { DisposeFunction, EventHandlers } from './types'
 import { AudioFrameQueue } from './utils/audio-frame-queue'
 
 const ERROR_MESSAGE =
@@ -23,7 +24,7 @@ async function disposeAll() {
   }
 }
 
-async function start(handler: (event: VADEvent) => void): Promise<void> {
+async function start(handlers: EventHandlers): Promise<void> {
   await disposeAll()
 
   if (typeof AudioWorkletNode === 'undefined') {
@@ -66,10 +67,8 @@ async function start(handler: (event: VADEvent) => void): Promise<void> {
     while (true) {
       const frame = queue.dequeue()
       if (!frame) break
-      const events = await processor.process(frame)
-      for (const event of events) {
-        handler(event)
-      }
+      const messages = await processor.process(frame)
+      dispatchEvents(messages, handlers)
     }
   }
 
@@ -83,19 +82,12 @@ async function start(handler: (event: VADEvent) => void): Promise<void> {
     port2.close()
     mediaStream?.getTracks().forEach((track) => track.stop())
     await audioContext.close()
-    const events = await processor.stop()
-    for (const event of events) {
-      handler(event)
-    }
+    const messages = await processor.stop()
+    dispatchEvents(messages, handlers)
   })
 }
 
-export interface RecordAudioOptions {
-  /**
-   * A function that will be called with the VAD event.
-   */
-  handler: (event: VADEvent) => void
-}
+export interface RecordAudioOptions extends EventHandlers {}
 
 /**
  * Records audio from the microphone and calls the `onAudioData` callback with the audio data.
@@ -103,9 +95,9 @@ export interface RecordAudioOptions {
  * @param options - The options for recording audio.
  * @returns A function to dispose of the audio recorder.
  */
-export async function recordAudio({
-  handler,
-}: RecordAudioOptions): Promise<DisposeFunction> {
-  await limit(() => start(handler))
+export async function recordAudio(
+  options: RecordAudioOptions,
+): Promise<DisposeFunction> {
+  await limit(() => start(options))
   return () => limit(disposeAll)
 }
