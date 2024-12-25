@@ -182,7 +182,7 @@ A function that will be called when speech audio data is available.
 
 ### SpeechData <a id="speech-data" href="#speech-data">#</a>
 
-An interface that represents speech data.
+An object representing speech data.
 
 <dl>
 
