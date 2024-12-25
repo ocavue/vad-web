@@ -74,7 +74,7 @@ importers:
       comlink:
         specifier: ^4.4.2
         version: 4.4.2
-      just-memoize:
+      just-once:
         specifier: ^2.2.0
         version: 2.2.0
       p-limit:
@@ -2367,8 +2367,8 @@ packages:
     resolution: {integrity: sha512-fYQHZTZ8jSfmWZ0iyzfwiU4WDX4HpHbMCZ3gPlWYiCl3BoeOTsqKBqnTVfH2rYT7eP5c3sVbeSPHnnJOaTrWiw==}
     engines: {node: '>=4.0'}
 
-  just-memoize@2.2.0:
-    resolution: {integrity: sha512-zriv+MY+61RXT0QsrO1ZJtL5umouqqSWmCGBkp2wJm35kniunBAA4qhUKx8Lvg/QcwrF9xuw9E6PkevKFf4boQ==}
+  just-once@2.2.0:
+    resolution: {integrity: sha512-Wo547FgUOUZ98jbrZ1KX8nRezdEdtgIlC2NK1u1RvR1oZ/WoU++FjprP8J8hRbaox776MHyeMZZED4DvhhHVjg==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -5957,7 +5957,7 @@ snapshots:
       array-includes: 3.1.8
       object.assign: 4.1.5
 
-  just-memoize@2.2.0: {}
+  just-once@2.2.0: {}
 
   keyv@4.5.4:
     dependencies:

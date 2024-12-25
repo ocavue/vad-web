@@ -42,7 +42,7 @@
   "dependencies": {
     "@huggingface/transformers": "^3.2.1",
     "comlink": "^4.4.2",
-    "just-memoize": "^2.2.0",
+    "just-once": "^2.2.0",
     "p-limit": "^6.1.0",
     "recorder-audio-worklet": "^6.0.39"
   },
