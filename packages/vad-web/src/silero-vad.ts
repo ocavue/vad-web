@@ -4,12 +4,13 @@ import {
   Tensor,
   type TypedArray,
 } from '@huggingface/transformers'
-import memoize from 'just-memoize'
+import cache from 'just-once'
 import pLimit from 'p-limit'
 
 import { EXIT_THRESHOLD, SAMPLE_RATE, SPEECH_THRESHOLD } from './constants'
 
-async function loadModel() {
+
+const getModel = cache(async () => {
   const silero_vad = await AutoModel.from_pretrained(
     'onnx-community/silero-vad',
     {
@@ -22,10 +23,8 @@ async function loadModel() {
     input: Tensor
     sr: Tensor
     state: Tensor
-  }) => Promise<{ stateN: Tensor; output: Tensor }>
-}
-
-const getModel = memoize(loadModel)
+  }) => Promise<{ stateN: Tensor; output: Tensor }>  
+})
 
 const limit = pLimit(1)
 
