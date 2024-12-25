@@ -1,5 +1,11 @@
 # vad-web
 
+## 0.6.1
+
+### Patch Changes
+
+- b674f14: Reduce the bundle size of the library.
+
 ## 0.6.0
 
 ### Minor Changes
