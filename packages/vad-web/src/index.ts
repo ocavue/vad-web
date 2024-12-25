@@ -28,7 +28,7 @@
  *
  * ```ts
  * import { recordAudio } from 'vad-web'
- * 
+ *
  * const dispose = await recordAudio({
  *   onSpeechStart: () => {
  *     console.log('Speech detected')
