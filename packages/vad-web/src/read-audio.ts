@@ -66,6 +66,9 @@ async function start(options: ReadAudioOptions): Promise<DisposeFunction> {
   return dispose
 }
 
+/**
+ * Options for {@link readAudio}.
+ */
 export interface ReadAudioOptions extends EventHandlers {
   /**
    * Audio file data contained in an ArrayBuffer that is loaded from fetch(), XMLHttpRequest, or FileReader.
