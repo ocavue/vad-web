@@ -60,6 +60,8 @@ A function to dispose of the audio recorder.
 
 ### RecordAudioOptions <a id="record-audio-options" href="#record-audio-options">#</a>
 
+Options for [recordAudio](README.md#record-audio).
+
 <dl>
 
 <dt>
@@ -113,6 +115,8 @@ Reads audio data from an ArrayBuffer and calls the `onAudioData` callback with t
 A function to dispose of the audio reader.
 
 ### ReadAudioOptions <a id="read-audio-options" href="#read-audio-options">#</a>
+
+Options for [readAudio](README.md#read-audio).
 
 <dl>
 

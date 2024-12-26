@@ -87,6 +87,9 @@ async function start(handlers: EventHandlers): Promise<void> {
   })
 }
 
+/**
+ * Options for {@link recordAudio}.
+ */
 export interface RecordAudioOptions extends EventHandlers {}
 
 /**
