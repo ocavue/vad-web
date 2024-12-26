@@ -36,36 +36,6 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
 
-  examples/with-vite:
-    devDependencies:
-      '@types/react':
-        specifier: ^18.3.12
-        version: 18.3.12
-      '@types/react-dom':
-        specifier: ^18.3.1
-        version: 18.3.1
-      '@vitejs/plugin-react':
-        specifier: ^4.3.4
-        version: 4.3.4(vite@5.4.11(@types/node@20.17.9))
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
-      typescript:
-        specifier: ^5.7.2
-        version: 5.7.2
-      vad-web:
-        specifier: '*'
-        version: link:../../packages/vad-web
-      vite:
-        specifier: ^5.0.0
-        version: 5.4.11(@types/node@20.17.9)
-      wav-file-encoder:
-        specifier: ^1.0.4
-        version: 1.0.4
-
   packages/vad-web:
     dependencies:
       '@huggingface/transformers':
@@ -102,6 +72,36 @@ importers:
       vitest:
         specifier: ^2.1.8
         version: 2.1.8(@types/node@20.17.9)
+
+  website:
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.12
+        version: 18.3.12
+      '@types/react-dom':
+        specifier: ^18.3.1
+        version: 18.3.1
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.3.4(vite@5.4.11(@types/node@20.17.9))
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.7.2
+      vad-web:
+        specifier: '*'
+        version: link:../packages/vad-web
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.11(@types/node@20.17.9)
+      wav-file-encoder:
+        specifier: ^1.0.4
+        version: 1.0.4
 
 packages:
 
