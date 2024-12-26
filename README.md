@@ -1,1 +1,0 @@
-packages/vad-web/README.md
