@@ -19,7 +19,7 @@
   "include": ["./*.ts", "./*.js"],
   "references": [
     {
-      "path": "./examples/with-vite/tsconfig.json"
+      "path": "./website/tsconfig.json"
     },
     {
       "path": "./packages/vad-web/tsconfig.json"
