@@ -216,7 +216,7 @@ A timestamp in milliseconds
 
 <dt>
 
-`audioData: Float32Array<ArrayBufferLike>`
+`audioData: Float32Array`
 
 </dt>
 

@@ -1,11 +1,3 @@
 {
-  "files": [],
-  "compilerOptions": {
-    "outDir": "./${configDir}/node_modules/.cache/ts-out",
-    "composite": true
-  },
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "extends": "@ocavue/tsconfig/dom/app",
 }

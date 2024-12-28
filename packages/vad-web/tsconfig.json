@@ -1,22 +1,5 @@
 {
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "esnext",
-    "lib": ["esnext", "dom"],
-    "outDir": "${configDir}/node_modules/.cache/ts-out",
-    "allowJs": true,
-    "moduleResolution": "Bundler",
-    "esModuleInterop": true,
-    "composite": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "verbatimModuleSyntax": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true
-  },
-  "include": ["./*.ts", "./*.js"],
+  "extends": "@ocavue/tsconfig/es/root",
   "references": [
     {
       "path": "./tsconfig.build.json"
