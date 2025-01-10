@@ -1,5 +1,11 @@
 # vad-web
 
+## 0.6.2
+
+### Patch Changes
+
+- 7c7be71: Increase silence pad length.
+
 ## 0.6.1
 
 ### Patch Changes

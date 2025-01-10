@@ -1,7 +1,7 @@
 {
   "name": "vad-web",
   "type": "module",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Voice activity detector (VAD) for the browser",
   "author": "ocavue <ocavue@gmail.com>",
   "license": "MIT",
