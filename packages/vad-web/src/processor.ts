@@ -100,17 +100,19 @@ export class VADProcessor {
       messages.push({ type: 'speechActive', data: speechData })
     }
 
+    if (this.speechSamples < MIN_SPEECH_SAMPLES) {
+      return
+    }
+
     if (
-      this.speechSamples > MIN_SPEECH_SAMPLES &&
-      (this.postSpeechSamples > SPEECH_PAD_SAMPLES || force)
+      force ||
+      this.postSpeechSamples > SPEECH_PAD_SAMPLES ||
+      this.speechSamples + SPEECH_PAD_SAMPLES * 2 >= MAX_AUDIO_DURATION_SAMPLES
     ) {
       speechData = speechData || this.getAudioData(now)
       messages.push({ type: 'speechAvailable', data: speechData })
 
-      this.preSpeechSamples = Math.max(
-        0,
-        this.postSpeechSamples - SPEECH_PAD_SAMPLES,
-      )
+      this.preSpeechSamples = 0
       this.speechSamples = 0
       this.postSpeechSamples = 0
     }
