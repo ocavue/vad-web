@@ -1,5 +1,11 @@
 # vad-web
 
+## 0.7.0
+
+### Minor Changes
+
+- bf009f4: Add a new `onSpeechOngoing` option that will be called periodically (once per second) while speech is ongoing.
+
 ## 0.6.2
 
 ### Patch Changes
