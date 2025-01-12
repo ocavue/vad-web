@@ -40,14 +40,12 @@ export const SPEECH_PAD_SECONDS = 0.8
 export const SPEECH_PAD_SAMPLES = SPEECH_PAD_SECONDS * SAMPLE_RATE
 
 /**
- * After each speech chunk, wait for at least this amount of silence
- * before considering the next chunk as a new speech chunk
- */
-export const MIN_SILENCE_SECONDS = 1.0
-export const MIN_SILENCE_SAMPLES = MIN_SILENCE_SECONDS * SAMPLE_RATE
-
-/**
- * Final speech chunks below this duration are discarded
+ * Speech below this duration are discarded
  */
 export const MIN_SPEECH_SECONDS = 0.25
 export const MIN_SPEECH_SAMPLES = MIN_SPEECH_SECONDS * SAMPLE_RATE
+
+/**
+ * The interval at which the speechActive event is emitted
+ */
+export const SPEECH_ACTIVE_INTERVAL_MS = 500
