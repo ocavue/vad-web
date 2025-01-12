@@ -49,7 +49,7 @@ export const SPEECH_PAD_SAMPLES = roundToFrameSize(
 /**
  * Speech below this duration are discarded
  */
-const MIN_SPEECH_SECONDS = 0.2
+const MIN_SPEECH_SECONDS = 0.25
 export const MIN_SPEECH_SAMPLES = roundToFrameSize(
   MIN_SPEECH_SECONDS * SAMPLE_RATE,
 )
@@ -57,4 +57,4 @@ export const MIN_SPEECH_SAMPLES = roundToFrameSize(
 /**
  * The interval at which the speechActive event is emitted
  */
-export const SPEECH_ACTIVE_INTERVAL_MS = 500
+export const SPEECH_ACTIVE_INTERVAL_MS = 1000

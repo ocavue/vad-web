@@ -51,15 +51,15 @@ export interface EventHandlers {
   onSpeechEnd?: () => void
 
   /**
-   * A function that will be called when a speech is finished and the audio data
-   * is available.
+   * A function that will be called when a speech is finished. The audio data
+   * contains the speech from the previous silence to the current time.
    */
   onSpeechAvailable?: (data: SpeechData) => void
 
   /**
-   * A function that will be called when a speech is active. This is called
-   * every 500ms during a speech. The audio data contains the speech from the
-   * previous silence to the current time.
+   * A function that will be called every second when a speech is active. The
+   * audio data contains the speech from the previous silence to the current
+   * time.
    */
   onSpeechActive?: (data: SpeechData) => void
 }
