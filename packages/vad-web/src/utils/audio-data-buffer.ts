@@ -63,7 +63,7 @@ export class AudioDataBuffer {
    */
   read(start = 0, end?: number): Float32Array {
     end = Math.min(end ?? this.size, this.size)
-    start = Math.min(start, end)
+    start = Math.max(0, Math.min(start, end))
     const readLen = end - start
 
     const result = new Float32Array(readLen)

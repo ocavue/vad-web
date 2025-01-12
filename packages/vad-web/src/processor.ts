@@ -117,16 +117,17 @@ export class VADProcessor {
   }
 
   private getAudioData(now: number): SpeechData {
-    const preSamples = Math.min(this.preSpeechSamples, SPEECH_PAD_SAMPLES)
-    const postSamples = Math.min(this.postSpeechSamples, SPEECH_PAD_SAMPLES)
-    const pickedSamples = preSamples + postSamples + this.speechSamples
+    const pickedSamples = Math.min(
+      this.buffer.length,
+      Math.min(this.preSpeechSamples, SPEECH_PAD_SAMPLES) +
+        this.speechSamples +
+        this.postSpeechSamples,
+    )
 
-    const dropSamples = Math.max(0, this.postSpeechSamples - SPEECH_PAD_SAMPLES)
-    const nowIndex = this.buffer.length
-    const endIndex = nowIndex - dropSamples
+    const endIndex = this.buffer.length
     const startIndex = endIndex - pickedSamples
 
-    const endTime = now - dropSamples / SAMPLE_RATE_MS
+    const endTime = now
     const startTime = endTime - pickedSamples / SAMPLE_RATE_MS
 
     return {
