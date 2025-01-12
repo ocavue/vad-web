@@ -11,14 +11,19 @@ export function dispatchEvents(
 
 function dispatchEvent(message: WorkerToMainMessage, handlers: EventHandlers) {
   switch (message.type) {
-    case 'speechStart':
+    case 'start':
       handlers.onSpeechStart?.()
       break
-    case 'speechEnd':
+    case 'end':
       handlers.onSpeechEnd?.()
       break
-    case 'speechAvailable':
+    case 'ongoing':
+      handlers.onSpeechOngoing?.(message.data)
+      break
+    case 'available':
       handlers.onSpeechAvailable?.(message.data)
       break
+    default:
+      message satisfies never
   }
 }

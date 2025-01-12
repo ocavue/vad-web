@@ -72,7 +72,7 @@ Options for [recordAudio](README.md#record-audio).
 
 <dd>
 
-A function that will be called when a speech is detected.
+Triggered when speech is detected.
 
 </dd>
 
@@ -84,7 +84,7 @@ A function that will be called when a speech is detected.
 
 <dd>
 
-A function that will be called when a silence is detected.
+Triggered when silence is detected.
 
 </dd>
 
@@ -96,7 +96,19 @@ A function that will be called when a silence is detected.
 
 <dd>
 
-A function that will be called when speech audio data is available.
+Triggered when a speech is finished and the audio data is available.
+
+</dd>
+
+<dt>
+
+`onSpeechOngoing?: (data: SpeechData) => void`
+
+</dt>
+
+<dd>
+
+Triggered periodically (once per second) while speech is ongoing.
 
 </dd>
 
@@ -154,7 +166,7 @@ If true, simulates real-time processing by adding delays to match the audio dura
 
 <dd>
 
-A function that will be called when a speech is detected.
+Triggered when speech is detected.
 
 </dd>
 
@@ -166,7 +178,7 @@ A function that will be called when a speech is detected.
 
 <dd>
 
-A function that will be called when a silence is detected.
+Triggered when silence is detected.
 
 </dd>
 
@@ -178,7 +190,19 @@ A function that will be called when a silence is detected.
 
 <dd>
 
-A function that will be called when speech audio data is available.
+Triggered when a speech is finished and the audio data is available.
+
+</dd>
+
+<dt>
+
+`onSpeechOngoing?: (data: SpeechData) => void`
+
+</dt>
+
+<dd>
+
+Triggered periodically (once per second) while speech is ongoing.
 
 </dd>
 

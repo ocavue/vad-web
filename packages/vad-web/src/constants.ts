@@ -26,28 +26,35 @@ export const EXIT_THRESHOLD = 0.1
  */
 export const AUDIO_FRAME_SIZE = 512
 
+function roundToFrameSize(value: number): number {
+  return Math.floor(value / AUDIO_FRAME_SIZE) * AUDIO_FRAME_SIZE
+}
+
 /**
  * Maximum duration of a speech audio chunk
  */
-export const MAX_AUDIO_DURATION_SECONDS = 30
-export const MAX_AUDIO_DURATION_SAMPLES =
-  MAX_AUDIO_DURATION_SECONDS * SAMPLE_RATE
+const MAX_AUDIO_DURATION_SECONDS = 30
+export const MAX_AUDIO_DURATION_SAMPLES = roundToFrameSize(
+  MAX_AUDIO_DURATION_SECONDS * SAMPLE_RATE,
+)
 
 /**
  * Pad the speech chunk with this amount each side
  */
-export const SPEECH_PAD_SECONDS = 0.8
-export const SPEECH_PAD_SAMPLES = SPEECH_PAD_SECONDS * SAMPLE_RATE
+const SPEECH_PAD_SECONDS = 0.8
+export const SPEECH_PAD_SAMPLES = roundToFrameSize(
+  SPEECH_PAD_SECONDS * SAMPLE_RATE,
+)
 
 /**
- * After each speech chunk, wait for at least this amount of silence
- * before considering the next chunk as a new speech chunk
+ * Speech below this duration are discarded
  */
-export const MIN_SILENCE_SECONDS = 1.0
-export const MIN_SILENCE_SAMPLES = MIN_SILENCE_SECONDS * SAMPLE_RATE
+const MIN_SPEECH_SECONDS = 0.25
+export const MIN_SPEECH_SAMPLES = roundToFrameSize(
+  MIN_SPEECH_SECONDS * SAMPLE_RATE,
+)
 
 /**
- * Final speech chunks below this duration are discarded
+ * The interval at which the speechActive event is emitted
  */
-export const MIN_SPEECH_SECONDS = 0.25
-export const MIN_SPEECH_SAMPLES = MIN_SPEECH_SECONDS * SAMPLE_RATE
+export const SPEECH_ACTIVE_INTERVAL_MS = 1000
