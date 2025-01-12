@@ -96,7 +96,22 @@ A function that will be called when a silence is detected.
 
 <dd>
 
-A function that will be called when speech audio data is available.
+A function that will be called when a speech is finished and the audio data
+is available.
+
+</dd>
+
+<dt>
+
+`onSpeechActive?: (data: SpeechData) => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when a speech is active. This is called
+every 500ms during a speech. The audio data contains the speech from the
+previous silence to the current time.
 
 </dd>
 
@@ -178,7 +193,22 @@ A function that will be called when a silence is detected.
 
 <dd>
 
-A function that will be called when speech audio data is available.
+A function that will be called when a speech is finished and the audio data
+is available.
+
+</dd>
+
+<dt>
+
+`onSpeechActive?: (data: SpeechData) => void`
+
+</dt>
+
+<dd>
+
+A function that will be called when a speech is active. This is called
+every 500ms during a speech. The audio data contains the speech from the
+previous silence to the current time.
 
 </dd>
 

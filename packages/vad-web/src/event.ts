@@ -20,5 +20,10 @@ function dispatchEvent(message: WorkerToMainMessage, handlers: EventHandlers) {
     case 'speechAvailable':
       handlers.onSpeechAvailable?.(message.data)
       break
+    case 'speechActive':
+      handlers.onSpeechActive?.(message.data)
+      break
+    default:
+      message satisfies never
   }
 }
