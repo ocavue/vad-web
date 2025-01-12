@@ -27,7 +27,7 @@ export const EXIT_THRESHOLD = 0.1
 export const AUDIO_FRAME_SIZE = 512
 
 function roundToFrameSize(value: number): number {
-  return Math.round(value / AUDIO_FRAME_SIZE) * AUDIO_FRAME_SIZE
+  return Math.floor(value / AUDIO_FRAME_SIZE) * AUDIO_FRAME_SIZE
 }
 
 /**

@@ -74,8 +74,6 @@ export class VADProcessor {
       this.postSpeechSamples = 0
     } else {
       if (this.wasSpeech) {
-        this.wasSpeech = false
-        messages.push({ type: 'speechEnd' })
         this.postSpeechSamples += audioFrame.length
       } else {
         this.preSpeechSamples += audioFrame.length
@@ -90,6 +88,10 @@ export class VADProcessor {
     messages: WorkerToMainMessage[],
     force: boolean,
   ): void {
+    if (this.speechSamples < MIN_SPEECH_SAMPLES) {
+      return
+    }
+
     const now = performance.now()
 
     let speechData: SpeechData | undefined
@@ -100,21 +102,18 @@ export class VADProcessor {
       messages.push({ type: 'speechActive', data: speechData })
     }
 
-    if (this.speechSamples < MIN_SPEECH_SAMPLES) {
-      return
-    }
-
     if (
       force ||
       this.postSpeechSamples > SPEECH_PAD_SAMPLES ||
       this.speechSamples + SPEECH_PAD_SAMPLES * 2 >= MAX_AUDIO_DURATION_SAMPLES
     ) {
       speechData = speechData || this.getAudioData(now)
-      messages.push({ type: 'speechAvailable', data: speechData })
+      messages.push(
+        { type: 'speechEnd' },
+        { type: 'speechAvailable', data: speechData },
+      )
 
-      this.preSpeechSamples = 0
-      this.speechSamples = 0
-      this.postSpeechSamples = 0
+      this.reset()
     }
   }
 
@@ -138,5 +137,12 @@ export class VADProcessor {
       audioData: this.buffer.read(startIndex, endIndex),
       sampleRate: SAMPLE_RATE,
     }
+  }
+
+  private reset(): void {
+    this.preSpeechSamples = 0
+    this.speechSamples = 0
+    this.postSpeechSamples = 0
+    this.wasSpeech = false
   }
 }
