@@ -22,17 +22,17 @@ export type MainToWorkerMessage =
  */
 export type WorkerToMainMessage =
   | {
-      type: 'speechStart'
+      type: 'start'
     }
   | {
-      type: 'speechEnd'
+      type: 'end'
     }
   | {
-      type: 'speechAvailable'
+      type: 'ongoing'
       data: SpeechData
     }
   | {
-      type: 'speechActive'
+      type: 'available'
       data: SpeechData
     }
 
@@ -41,27 +41,31 @@ export type WorkerToMainMessage =
  */
 export interface EventHandlers {
   /**
-   * A function that will be called when a speech is detected.
+   * Triggered when speech is detected.
    */
   onSpeechStart?: () => void
 
   /**
-   * A function that will be called when a silence is detected.
+   * Triggered when silence is detected.
    */
   onSpeechEnd?: () => void
 
   /**
-   * A function that will be called when a speech is finished. The audio data
-   * contains the speech from the previous silence to the current time.
+   * Triggered when a speech is finished and the audio data is available.
+   *
+   * @param data Contains the complete audio segment from the last silence to
+   * current moment. It's useful for speech recognition or other
+   * post-processing.
    */
   onSpeechAvailable?: (data: SpeechData) => void
 
   /**
-   * A function that will be called every second when a speech is active. The
-   * audio data contains the speech from the previous silence to the current
-   * time.
+   * Triggered periodically (once per second) while speech is ongoing.
+   *
+   * @param data Contains audio data from the last silence to current moment.
+   * This is an incomplete speech segment, useful for real-time feedback.
    */
-  onSpeechActive?: (data: SpeechData) => void
+  onSpeechOngoing?: (data: SpeechData) => void
 }
 
 /**

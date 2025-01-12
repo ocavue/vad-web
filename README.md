@@ -72,7 +72,7 @@ Options for [recordAudio](README.md#record-audio).
 
 <dd>
 
-A function that will be called when a speech is detected.
+Triggered when speech is detected.
 
 </dd>
 
@@ -84,7 +84,7 @@ A function that will be called when a speech is detected.
 
 <dd>
 
-A function that will be called when a silence is detected.
+Triggered when silence is detected.
 
 </dd>
 
@@ -96,22 +96,19 @@ A function that will be called when a silence is detected.
 
 <dd>
 
-A function that will be called when a speech is finished and the audio data
-is available.
+Triggered when a speech is finished and the audio data is available.
 
 </dd>
 
 <dt>
 
-`onSpeechActive?: (data: SpeechData) => void`
+`onSpeechOngoing?: (data: SpeechData) => void`
 
 </dt>
 
 <dd>
 
-A function that will be called when a speech is active. This is called
-every 500ms during a speech. The audio data contains the speech from the
-previous silence to the current time.
+Triggered periodically (once per second) while speech is ongoing.
 
 </dd>
 
@@ -169,7 +166,7 @@ If true, simulates real-time processing by adding delays to match the audio dura
 
 <dd>
 
-A function that will be called when a speech is detected.
+Triggered when speech is detected.
 
 </dd>
 
@@ -181,7 +178,7 @@ A function that will be called when a speech is detected.
 
 <dd>
 
-A function that will be called when a silence is detected.
+Triggered when silence is detected.
 
 </dd>
 
@@ -193,22 +190,19 @@ A function that will be called when a silence is detected.
 
 <dd>
 
-A function that will be called when a speech is finished and the audio data
-is available.
+Triggered when a speech is finished and the audio data is available.
 
 </dd>
 
 <dt>
 
-`onSpeechActive?: (data: SpeechData) => void`
+`onSpeechOngoing?: (data: SpeechData) => void`
 
 </dt>
 
 <dd>
 
-A function that will be called when a speech is active. This is called
-every 500ms during a speech. The audio data contains the speech from the
-previous silence to the current time.
+Triggered periodically (once per second) while speech is ongoing.
 
 </dd>
 

@@ -64,20 +64,21 @@ export class VADProcessor {
 
     this.buffer.write(audioFrame)
 
-    if (isSpeech) {
-      if (!this.wasSpeech) {
-        this.wasSpeech = true
-        messages.push({ type: 'speechStart' })
-      }
+    if (isSpeech && !this.wasSpeech) {
+      this.wasSpeech = true
+      messages.push({ type: 'start' })
+    } else if (!isSpeech && this.wasSpeech) {
+      this.wasSpeech = false
+      messages.push({ type: 'end' })
+    }
 
+    if (this.wasSpeech) {
       this.speechSamples += this.postSpeechSamples + audioFrame.length
       this.postSpeechSamples = 0
+    } else if (this.speechSamples) {
+      this.postSpeechSamples += audioFrame.length
     } else {
-      if (this.wasSpeech) {
-        this.postSpeechSamples += audioFrame.length
-      } else {
-        this.preSpeechSamples += audioFrame.length
-      }
+      this.preSpeechSamples += audioFrame.length
     }
 
     this.handleAudioData(messages, false)
@@ -99,7 +100,7 @@ export class VADProcessor {
     if (now - this.lastSpeechActiveMessageTime > SPEECH_ACTIVE_INTERVAL_MS) {
       this.lastSpeechActiveMessageTime = now
       speechData = this.getAudioData(now)
-      messages.push({ type: 'speechActive', data: speechData })
+      messages.push({ type: 'ongoing', data: speechData })
     }
 
     if (
@@ -108,10 +109,7 @@ export class VADProcessor {
       this.speechSamples + SPEECH_PAD_SAMPLES * 2 >= MAX_AUDIO_DURATION_SAMPLES
     ) {
       speechData = speechData || this.getAudioData(now)
-      messages.push(
-        { type: 'speechEnd' },
-        { type: 'speechAvailable', data: speechData },
-      )
+      messages.push({ type: 'available', data: speechData })
 
       this.reset()
     }
