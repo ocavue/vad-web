@@ -42,7 +42,7 @@ export const SPEECH_PAD_SAMPLES = SPEECH_PAD_SECONDS * SAMPLE_RATE
 /**
  * Speech below this duration are discarded
  */
-export const MIN_SPEECH_SECONDS = 0.25
+export const MIN_SPEECH_SECONDS = 0.2
 export const MIN_SPEECH_SAMPLES = MIN_SPEECH_SECONDS * SAMPLE_RATE
 
 /**

@@ -66,14 +66,15 @@ export class VADProcessor {
 
     if (isSpeech) {
       if (!this.wasSpeech) {
+        this.wasSpeech = true
         messages.push({ type: 'speechStart' })
       }
-      this.wasSpeech = true
 
       this.speechSamples += this.postSpeechSamples + audioFrame.length
       this.postSpeechSamples = 0
     } else {
       if (this.wasSpeech) {
+        this.wasSpeech = false
         messages.push({ type: 'speechEnd' })
         this.postSpeechSamples += audioFrame.length
       } else {
