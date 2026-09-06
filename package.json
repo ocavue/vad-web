@@ -18,7 +18,7 @@
     "ci:publish": "pnpm run build:package && pnpm publish --access public -r --no-git-checks --tag latest"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.10",
+    "@changesets/cli": "^3.0.0",
     "@ocavue/eslint-config": "^2.11.1",
     "@ocavue/tsconfig": "^0.1.3",
     "@size-limit/preset-small-lib": "^11.1.6",

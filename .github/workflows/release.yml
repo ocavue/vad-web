@@ -17,13 +17,13 @@ jobs:
 
       - name: Create Release Pull Request
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
         with:
-          version: pnpm ci:version
-          publish: pnpm ci:publish
-          commit: 'chore: version packages'
-          title: 'chore: version packages'
-          createGithubReleases: true
+          version-script: pnpm ci:version
+          publish-script: pnpm ci:publish
+          commit-message: 'chore: version packages'
+          pr-title: 'chore: version packages'
+          create-github-releases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
